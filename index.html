@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salamandra SN Report Generator V68</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#202124;background:#f4f6f8}
+*{box-sizing:border-box}body{margin:0;padding:16px}.wrap{max-width:900px;margin:auto}
+h1{font-size:23px;margin:4px 0 6px}.hint{color:#606770;font-size:14px;margin:0 0 16px}
+.card{background:white;border:1px solid #dfe3e8;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 8px #00000008}
+.cardhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.cardhead h2{font-size:17px;margin:0}.grid{display:flex;flex-wrap:wrap;gap:12px}.grid>div{width:calc(50% - 6px)}
+label{display:block;font-size:13px;font-weight:650;margin:0 0 5px;color:#424850}
+input,select,textarea{width:100%;font:inherit;border:1px solid #cbd1d8;border-radius:9px;padding:11px;background:#fff;color:#202124;min-height:44px}
+textarea{min-height:100px;resize:vertical;line-height:1.45}
+.full{grid-column:1/-1}.rcPartFields{display:none;margin-top:8px}.rcPartFields.show{display:block}.rcPartFields input{margin-top:7px}.subbin{display:none}.subbin.show{display:block}
+button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650;cursor:pointer}
+.primary{background:#1769d2;color:white}.secondary{background:#e9eef5;color:#253348}.danger{background:#fff0f0;color:#b42318}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+#output{min-height:260px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;overflow:auto}
+
+.stepRow{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:7px 0}
+.stepNo{font-weight:700;color:#596273;text-align:center;min-width:25px}.moveControls{flex:0 0 34px;width:34px;display:flex;flex-direction:column;gap:3px;align-items:stretch}.moveStep{width:34px;min-width:34px;min-height:27px;padding:2px 3px!important;background:#eef2f7!important;color:#334155!important;border:1px solid #d8dee8!important;border-radius:7px;font-size:14px;line-height:1}.moveStep:disabled{opacity:.3;cursor:not-allowed}.stepRow{border:1px solid transparent;border-radius:11px;padding:4px;transition:background .18s,border-color .18s}.sectionHelp{font-size:12px;color:#64748b;margin:4px 0 10px}quickTip{background:#f1f6ff;border:1px solid #d7e6ff;border-radius:9px;padding:9px 11px;color:#31547d;font-size:12px;margin:8px 0 12px}.stepRow.justMoved{animation:moveFlash .45s ease-out}@keyframes moveFlash{0%{background:#dbeafe;border-color:#1769d2}100%{background:transparent;border-color:transparent}}
+.stepRow select.stepSelect{flex:1 1 190px;min-width:0;width:auto}.stepRow input{flex:1 1 100%;min-width:0;width:100%;position:relative;z-index:1;pointer-events:auto}.stepRow select.reTarget{flex:1 1 100%;min-width:0;width:100%}.stepRow.resistanceMode{display:grid;grid-template-columns:22px minmax(105px,1.15fr) minmax(75px,.85fr) 58px 30px;gap:5px}.stepRow.resistanceMode .stepSelect{grid-column:2;min-width:0;width:100%;font-size:13px;padding:8px 4px}.stepRow.resistanceMode .resistanceName{grid-column:3;min-width:0;width:100%!important;font-size:13px;padding:8px 5px;flex:none!important}.stepRow.resistanceMode .resistanceToggle{grid-column:4;min-width:0;width:58px;padding:8px 4px}.stepRow.resistanceMode .resistanceOhms{grid-column:2/5;width:100%;font-size:13px;padding:8px 7px;min-height:38px}.stepRow.resistanceMode .stepNo{grid-column:1}.stepRow.resistanceMode .stepNo+select{grid-column:2}.stepRow.resistanceMode button:last-child{grid-column:5;padding:7px 3px}.stepRow input.resistanceName{flex:1 1 120px!important;width:auto!important}
+.stepRow.checkMode{display:grid;grid-template-columns:25px 34px minmax(115px,1.1fr) minmax(105px,1fr) 76px 30px;gap:5px;align-items:center}
+.stepRow.checkMode .stepNo{grid-column:1;grid-row:1}
+.stepRow.checkMode .moveControls{grid-column:2;grid-row:1;flex-direction:column;width:34px}
+.stepRow.checkMode .stepSelect{grid-column:3;grid-row:1;min-width:0;width:100%;font-size:13px;padding:8px 4px}
+.stepRow.checkMode .checkName{grid-column:4;grid-row:1;display:block!important;min-width:0;width:100%!important;flex:none!important;font-size:13px;padding:8px 5px}
+.stepRow.checkMode .checkResult{grid-column:5;grid-row:1;display:block!important;min-width:0;width:100%;font-size:13px;padding:8px 4px}
+.stepRow.checkMode button:last-child{grid-column:6;grid-row:1;padding:7px 3px}
+@media(max-width:600px){.stepRow.checkMode{grid-template-columns:22px 32px minmax(78px,1fr) minmax(68px,1fr) 60px 26px;gap:4px}.stepRow.checkMode .moveControls{width:32px}.stepRow.checkMode .stepSelect,.stepRow.checkMode .checkName,.stepRow.checkMode .checkResult{font-size:12px;padding:8px 3px}}
+.stepRow button{padding:9px}.resultToggle{background:#dff4e5;color:#176b36;font-size:13px}.resultToggle.fail{background:#ffe3e3;color:#b42318}
+.stepRow button{padding:9px;background:#fff0f0;color:#b42318}
+.small{font-size:12px;color:#6b7280;margin-top:5px}.errorDetail{user-select:text;-webkit-user-select:text}
+@media(max-width:600px){body{padding:10px}.grid>div{width:100%}.card{padding:13px}.stepRow{gap:6px}.stepRow select,.stepRow input{font-size:14px;padding:10px}.stepRow button{padding:8px 10px}}
+
+.snInputRow{display:flex;gap:8px;align-items:stretch}
+.snInputRow .sn{min-width:0;flex:1}
+.scanQrBtn{flex:0 0 auto;border:0;border-radius:9px;padding:0 14px;background:#2563a6;color:#fff;font-weight:650;font-size:14px;white-space:nowrap}
+.scanQrBtn:active{opacity:.8}
+.qrModal{position:fixed;inset:0;background:#000b;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
+.qrPanel{width:min(100%,480px);background:#fff;color:#202124;border-radius:16px;padding:16px}
+.qrPanel h3{margin:0 0 8px;font-size:18px}
+.qrPanel p{font-size:14px;color:#5f6368;margin:0 0 12px}
+.qrVideoWrap{background:#111;border-radius:12px;overflow:hidden;min-height:220px;display:flex;align-items:center;justify-content:center}
+.qrVideo{width:100%;max-height:55vh;object-fit:cover;display:block}
+.qrActions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.qrActions button{border:0;border-radius:9px;padding:10px 14px;font:inherit}
+.qrClose{background:#e8eaed;color:#202124}
+.qrStatus{margin-top:10px!important;min-height:20px}
+@media(max-width:420px){.scanQrBtn{padding:0 10px;font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Salamandra SN Report Generator</h1>
+<p class="hint">Salamandra 維修紀錄：輸入 SN、Station、Error Code、Status 及 SUB-BIN，再產生可直接貼到聊天群的報告。</p>
+<div id="records"></div>
+<div class="actions">
+<button class="secondary" id="add">＋ 新增一筆</button>
+<button class="primary" id="generate">產生報告</button>
+<button class="secondary" id="copy">複製全部</button>
+<button class="secondary" id="parseOutput">從輸出回填欄位</button>
+<button class="danger" id="clear">清空全部</button>
+</div>
+<div class="card">
+<div class="cardhead"><h2>輸出結果</h2><span class="small" id="count"></span></div>
+<textarea id="output" placeholder="報告輸出區
+
+• 產生報告：按上方「產生報告」，結果會顯示在這裡。
+• 回填欄位：貼上既有報告後按「從輸出回填欄位」，系統會盡量自動選取對應選單；無法辨識的步驟會保留原文。
+• 生成一日報告：先將當天所有報告貼到這裡，再按下方「生成一日報告」，系統會整理有 SN 的紀錄、重新編號，並移除 RC 清號代碼。
+
+提示：開始輸入或貼上內容後，這段灰色說明會自動消失。"></textarea>
+<div class="actions" style="margin:10px 0 0"><button class="secondary" id="dailyReport" type="button">生成一日報告</button></div>
+
+</div>
+</div>
+
+<datalist id="errorOptions"><option value="自訂輸入"></option>
+<option value="7 : Run_Authenticator_Win.etf Failed 1 0 1"></option>
+<option value="11 : Salamandra_CPLDs_Erase_All.stp Failed 1 0 1"></option>
+<option value="initial_setup_jig_control-jig_power_on-ERROR-JIGControllerException"></option>
+<option value="power_on-burn_os_if_needed_and_boot_os-ERROR-TimeoutError;">Burn OS Timeout</option>
+<option value="194 : SW_U74_Via_U8_U9_Bit1_U12_U13_MUXs_ct.cvf Failed 1 0 1"></option>
+<option value="197 : SW_U78_Via_U8_U9_Bit1_U10_U11_MUXs_ct.cvf Failed 1 0 1"></option>
+<option value="103 : Pwr_Good_OSFP_CTRL_Sense-all_ct.cvf Failed 1 0 1"></option>
+<option value="176 Pwr_Good_AVDD_Sense-all_ct.cvf"></option>
+<option value="63: CMEX_U52_BIOS_Flash_program_8MHz.etf Failed 101"></option>
+<option value="monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;"></option>
+<option value="sbc_storage_usb-passmark-FAIL-MEASUREMENT"></option>
+<option value="power_on-config_static_ip-ERROR-Exception;"></option>
+</datalist>
+<datalist id="netNameOptions"><option value="自訂輸入"></option>
+<option value="SW_GP_PL_AVDD_T_PG"></option>
+<option value="SW_GP_OSFP_SWB_CONTROLLER1_PG"></option>
+<option value="PORTS_GP_OSFP_CONTROLLER_PG"></option>
+<option value="NA"></option>
+</datalist>
+<datalist id="subbinOptions"><option value="自訂輸入"></option>
+<option value="NA"></option>
+<option value="pdb1_hsc_1_read_hotswap_temperature-Measuring HOTSWAP TEMPERATURE"></option>
+</datalist>
+<div id="recordTemplate" style="display:none">
+<section class="card record">
+<div class="cardhead"><h2>資料 <span class="num"></span></h2><button class="danger remove" type="button">刪除此筆</button></div>
+<div class="grid">
+<div><label>SN</label>
+<div class="snInputRow">
+<input class="sn" inputmode="numeric" placeholder="輸入 SN">
+
+</div>
+</div>
+<div><label>Station</label><select class="station"><option>R_JTAG</option><option>R_FT</option><option>B30M</option><option value="__custom">自訂輸入</option></select><input class="stationCustom customField" placeholder="輸入 Station" style="display:none;margin-top:6px"></div>
+<div class="full"><label>Error Code</label><div class="small">Station 選 R_JTAG 顯示 JTAG/CVF；選 R_FT 顯示 FT 測試項目。</div>
+<select class="errorSelect">
+<option value="">請選擇 Error Code</option>
+<option value="__custom">自訂輸入</option>
+<optgroup label="JTAG / CVF">
+<option value="7 : Run_Authenticator_Win.etf Failed 1 0 1">7</option>
+<option value="11 : Salamandra_CPLDs_Erase_All.stp Failed 1 0 1">11</option>
+<option value="26 : Salamandra_ASIC_MP29816_Program_0x62_Rev0100.etf Failed 1 0 1">26</option>
+<option value="63: CMEX_U52_BIOS_Flash_program_8MHz.etf Failed 101">63</option>
+<option value="69 : Pwr_Good_12V_PDB0_PDB1_Sense_ct.cvf Failed 1 0 1">69</option>
+<option value="91 : Salamandra_AMD_TAP3_infrastructure_inf.cvf Failed 1 0 1">91</option>
+<option value="98 : Pwr_Good_1V8_CPLD_Sense-all_ct.cvf Failed 1 0 1">98</option>
+<option value="103 : Pwr_Good_OSFP_CTRL_Sense-all_ct.cvf Failed 1 0 1">103</option>
+<option value="176 : Salamandra_ASIC_TAP1_infrastructure_inf.cvf Failed 1 0 1">176</option>
+<option value="176 Pwr_Good_AVDD_Sense-all_ct.cvf">176</option>
+<option value="182 : Salamandra_pu&amp;pd_pull.cvf Failed 1 0 1">182</option>
+<option value="194 : SW_U74_Via_U8_U9_Bit1_U12_U13_MUXs_ct.cvf Failed 1 0 1">194</option>
+<option value="197 : SW_U78_Via_U8_U9_Bit1_U10_U11_MUXs_ct.cvf Failed 1 0 1">197</option>
+</optgroup>
+<optgroup label="Leakage Monitoring">
+<option value="a2d_leakage_monitoring-monitor_mgmt_leak_AIN0-FAIL-MEASUREMENT;">MGMT Leak AIN0</option>
+<option value="__swb_leakage">SWB Leakage (AIN0–3)</option>
+</optgroup>
+<optgroup label="Chiller">
+<option value="chiller init_monitor_chiller until ready-ERROR-TIMEOUT">Chiller Timeout</option>
+</optgroup>
+<optgroup label="LED">
+<option value="led-led-FAIL-MEASUREMENT">LED Fail</option>
+</optgroup>
+<optgroup label="JIG">
+<option value="initial_setup_jig_control-jig_power_on-ERROR-JIGControllerException">JIG Power On</option>
+</optgroup>
+<optgroup label="Power On">
+<option value="power_on-burn_os_if_needed_and_boot_os-ERROR-TimeoutError;">Burn OS Timeout</option>
+<option value="power_on-burn_os_if_needed_and_boot_os-ERROR-OutOfBandException;">Burn OS OutOfBand</option>
+<option value="power_on-config_static_ip-ERROR-Exception;">Static IP Exception</option>
+</optgroup>
+<optgroup label="Monitoring">
+<option value="__monitoring_load">Monitoring with Load</option>
+<option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT">ASIC Delta Temp</option>
+</optgroup>
+<optgroup label="Interrupt">
+<option value="interrupts-interrupts_phase-FAIL-MEASUREMENT;">Interrupt Fail</option>
+</optgroup>
+<optgroup label="USB / Storage">
+<option value="sbc_storage_usb-passmark-FAIL-MEASUREMENT">USB PassMark Fail</option>
+</optgroup>
+</select>
+<select class="errorLoadType" style="display:none;margin-top:7px"><option value="vrs">VRS</option><option value="osfp">OSFP</option></select>
+<select class="errorAin" style="display:none;margin-top:7px"><option value="0">AIN0</option><option value="1">AIN1</option><option value="2">AIN2</option><option value="3">AIN3</option></select>
+<input class="errorCustom" placeholder="輸入自訂 Error Code" style="display:none;margin-top:7px">
+<div class="errorDetail" aria-live="polite" style="display:none;margin-top:7px;padding:9px 11px;border:1px solid #444;border-radius:8px;font-size:12px;line-height:1.4;overflow-wrap:anywhere;color:#b8c2ce"></div>
+</div>
+<div class="full">
+<label>Status</label>
+<div class="quickTip">提示：每一行代表一個維修步驟。先選動作，再填出現的零件或結果欄位；不確定分類時可選「自訂輸入」。</div>
+<div class="sectionHelp">先選擇「檢查／測試」，再選擇「維修／處理」；需要調整順序時，使用 ↑ ↓ 按鈕。</div>
+<div class="statusSteps"></div>
+<button class="secondary addStep" type="button" style="margin-top:7px">＋ 新增 Status</button>
+</div>
+<div class="full"><label>NET NAME</label><input class="netNameText" list="netNameOptions" placeholder="選擇常用 NET NAME，或直接輸入新項目"></div>
+<div class="full"><label>SUB-BIN</label><input class="subbinText" list="subbinOptions" placeholder="選擇常用 SUB-BIN，或直接輸入新項目"></div>
+<div class="full rcSection" style="display:none"><label>RC 清號代碼</label>
+<select class="rcCode">
+<option value="">不選擇 RC</option>
+<option value="RC35">RC35 — 未做過任何拆解／NTF</option>
+<option value="RC56">RC56 — 沒有換料，僅重新組裝 Cable 或板子</option>
+<option value="RC48">RC48 — 需更換料件（Cable／板子）</option>
+</select>
+<div class="rcPartFields">
+<label>更換零件 / Part</label>
+<select class="rcPart">
+<option value="">選擇零件</option>
+<option value="Cable / Harness">Cable / Harness</option>
+<option value="MGMT Board">MGMT Board</option>
+<option value="SWB">SWB</option>
+<option value="PDB">PDB</option>
+<option value="OSFP Board">OSFP Board</option>
+<option value="BMC">BMC</option>
+<option value="SSD">SSD</option>
+<option value="Leakage Sensor">Leakage Sensor</option>
+<option value="J48 Sensor">J48 Sensor</option>
+<option value="Other">Other / 自填</option>
+</select>
+<input class="rcPartCustom" placeholder="自填零件名稱（可搭配上方選單）">
+</div>
+</div>
+</div>
+</section>
+</div>
+<script>
+var records=document.getElementById('records');
+var templateHTML=document.getElementById('recordTemplate').innerHTML;
+var statusGroups=[
+ {name:'檢查／測試',items:[
+ {label:'Check',result:'check_test'},
+ {label:'Test resistance',result:'resistance_test'}
+ ]},
+ {name:'維修／處理',items:[
+ {label:'Reburn JTAG',result:true},{label:'Retest DFT',result:true},{label:'ICT',result:true},
+ {label:'Reassemble',result:'reassemble_part'},
+ {label:'Replace',result:'replace_part'},{label:'Need RE to change',result:'handoff_part'},{label:'Need RE to rework',result:'handoff_part'},
+ {label:'Need RE do ICT',result:'ict_handoff'},
+ {label:'Need RE to assemble',result:'assemble_handoff'}
+ ]},
+ {name:'其他',items:[
+ {label:'NTF',result:null},{label:'Need further debug',result:null},{label:'Check out',result:null},{label:'自訂輸入',result:'custom'}
+ ]}
+];
+function updateRCVisibility(card){
+ var found=false;
+ card.querySelectorAll('.stepRow').forEach(function(row){
+ var sel=row.querySelector('.stepSelect');
+ if(!sel||!sel.value||sel.value==='custom')return;
+ var ids=sel.value.split('_'),item=statusGroups[Number(ids[0])]&&statusGroups[Number(ids[0])].items[Number(ids[1])];
+ if(item&&item.label==='Check out')found=true;
+ });
+ var section=card.querySelector('.rcSection');
+ section.style.display=found?'block':'none';
+ if(!found){
+ card.querySelector('.rcCode').value='';
+ card.querySelector('.rcPart').value='';
+ card.querySelector('.rcPartCustom').value='';
+ card.querySelector('.rcPartFields').classList.remove('show');
+ }
+}
+function addStep(card, presetValue){
+ var row=document.createElement('div');row.className='stepRow';
+ var no=document.createElement('span');no.className='stepNo';
+ var moveControls=document.createElement('div');moveControls.className='moveControls';
+ var moveUp=document.createElement('button');moveUp.type='button';moveUp.className='moveStep';moveUp.textContent='↑';moveUp.title='上移一步';moveUp.setAttribute('aria-label','上移一步');
+ var moveDown=document.createElement('button');moveDown.type='button';moveDown.className='moveStep';moveDown.textContent='↓';moveDown.title='下移一步';moveDown.setAttribute('aria-label','下移一步');
+ moveUp.onclick=function(){if(row.previousElementSibling){row.parentNode.insertBefore(row,row.previousElementSibling);renumberSteps(card);flashMoved(row);}};
+ moveDown.onclick=function(){if(row.nextElementSibling){row.parentNode.insertBefore(row,row.nextElementSibling.nextElementSibling);renumberSteps(card);flashMoved(row);}};
+ moveControls.appendChild(moveUp);moveControls.appendChild(moveDown);
+ var action=document.createElement('select');action.className='stepSelect';
+ var first=document.createElement('option');first.value='';first.textContent='選擇 Status';action.appendChild(first);
+ var customOption=document.createElement('option');customOption.value='custom';customOption.textContent='自訂輸入 …';action.appendChild(customOption);
+ for(var i=0;i<statusGroups.length;i++){
+ var og=document.createElement('optgroup');og.label=statusGroups[i].name;
+ for(var k=0;k<statusGroups[i].items.length;k++){
+ var op=document.createElement('option');op.value=i+'_'+k;var optItem=statusGroups[i].items[k];op.textContent=optItem.label+(['replace_part','handoff_part','resistance_test','check_test','ict_handoff','reassemble_part','assemble_handoff'].indexOf(optItem.result)>=0?' …':'');og.appendChild(op);
+ }
+ action.appendChild(og);
+ }
+ var result=document.createElement('button');result.type='button';result.className='resultToggle';result.textContent='Pass';result.style.display='none';result.dataset.state='pass';
+ var custom=document.createElement('input');custom.className='stepCustom';custom.placeholder='輸入 Status 內容…';custom.style.display='none';
+ var reTarget=document.createElement('select');reTarget.className='reTarget';reTarget.style.display='none';
+ var reTargetFirst=document.createElement('option');reTargetFirst.value='';reTargetFirst.textContent='選擇零件';reTarget.appendChild(reTargetFirst);
+ var reTargets=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','Cable','3 harness','I/O board','Other'];
+ for(var rt=0;rt<reTargets.length;rt++){var ro=document.createElement('option');ro.value=reTargets[rt];ro.textContent=reTargets[rt];reTarget.appendChild(ro);}
+ var cableInput=document.createElement('input');cableInput.className='cableCustom';cableInput.placeholder='Cable 編號（可留空）…';cableInput.style.display='none';
+ var partCustom=document.createElement('input');partCustom.className='partCustom';partCustom.placeholder='輸入零件名稱…';partCustom.style.display='none';
+ var partDetail=document.createElement('input');partDetail.className='partDetail';partDetail.placeholder='補充位置／編號（可留空）…';partDetail.style.display='none';
+ var replaceResult=document.createElement('button');replaceResult.type='button';replaceResult.className='resultToggle replaceResult';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.style.display='none';
+ var resistanceName=document.createElement('input');resistanceName.className='resistanceName';resistanceName.placeholder='測試項目，例如 J16…';resistanceName.style.display='none';resistanceName.style.flex='1 1 150px';resistanceName.style.width='auto';
+ var resistanceResult=document.createElement('select');resistanceResult.className='resistanceToggle resistanceResult';resistanceResult.style.display='none';resistanceResult.style.flex='0 0 82px';
+ var resistanceOhms=document.createElement('input');resistanceOhms.className='resistanceOhms';resistanceOhms.type='text';resistanceOhms.inputMode='decimal';resistanceOhms.placeholder='阻值（Ω），例如 18';resistanceOhms.style.display='none';
+ ['OK','Fail','Open'].forEach(function(v){var o=document.createElement('option');o.value=v.toLowerCase();o.textContent=v;resistanceResult.appendChild(o);});
+ var checkName=document.createElement('input');checkName.className='checkName';checkName.placeholder='檢查項目，例如 J85…';checkName.style.display='none';checkName.style.flex='1 1 130px';checkName.style.width='auto';
+ var checkResult=document.createElement('select');checkResult.className='resistanceToggle checkResult';checkResult.style.display='none';checkResult.style.flex='0 0 112px';
+ ['OK','Fail','Missing'].forEach(function(v){var o=document.createElement('option');o.value=v.toLowerCase();o.textContent=v;checkResult.appendChild(o);});
+ var ictTarget=document.createElement('input');ictTarget.className='ictTarget';ictTarget.placeholder='輸入對象，例如 SWB…';ictTarget.style.display='none';ictTarget.style.flex='1 1 150px';ictTarget.style.width='auto';
+ var furtherDebug=document.createElement('button');furtherDebug.type='button';furtherDebug.className='resultToggle furtherDebug';furtherDebug.textContent='Further debug: OFF';furtherDebug.dataset.state='off';furtherDebug.style.display='none';
+ var remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.title='刪除此步驟';
+ remove.onclick=function(){row.parentNode.removeChild(row);renumberSteps(card);updateRCVisibility(card);};
+ action.onchange=function(){
+ updateRCVisibility(card);
+ custom.style.display='none';result.style.display='none';reTarget.style.display='none';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';replaceResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
+ row.classList.remove('resistanceMode','checkMode');
+ if(action.value==='custom'){custom.style.display='block';return;}
+ if(!action.value)return;
+ var ids=action.value.split('_'),item=statusGroups[Number(ids[0])].items[Number(ids[1])];
+ if(item.result==='custom_text'){custom.style.display='block';custom.placeholder='補充內容…';}
+ if(item.result==='ict_handoff'){ictTarget.style.display='block';furtherDebug.style.display='inline-block';furtherDebug.textContent='Further debug: OFF';furtherDebug.dataset.state='off';furtherDebug.className='resultToggle furtherDebug';}
+ if(item.result===true){result.style.display='inline-block';result.textContent='Pass';result.dataset.state='pass';result.className='resultToggle pass';}
+ if(item.result==='reassemble_part'){reTarget.style.display='block';}
+ if(item.result==='assemble_handoff'){reTarget.style.display='block';partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
+ if(item.result==='replace_part'){reTarget.style.display='block';replaceResult.style.display='inline-block';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.className='resultToggle replaceResult pass';}
+ if(item.result==='handoff_part'){reTarget.style.display='block';}
+ if(item.result==='resistance_test'){row.classList.add('resistanceMode');resistanceName.style.display='block';resistanceResult.style.display='block';resistanceResult.value='ok';resistanceOhms.style.display='none';resistanceOhms.value='';}
+ if(item.result==='check_test'){row.classList.add('checkMode');checkName.style.display='block';checkResult.style.display='block';checkResult.value='ok';}
+ };
+ resistanceResult.onchange=function(){resistanceOhms.style.display=resistanceResult.value==='fail'?'block':'none';if(resistanceResult.value!=='fail')resistanceOhms.value='';};
+ reTarget.onchange=function(){
+ var chosen=action.value?statusGroups[Number(action.value.split('_')[0])].items[Number(action.value.split('_')[1])]:null;
+ if(chosen&&chosen.result==='assemble_handoff'){partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
+ cableInput.style.display=reTarget.value==='Cable'?'block':'none';
+ partCustom.style.display=(reTarget.value==='Other'||(chosen&&chosen.result==='assemble_handoff'))?'block':'none';
+ partDetail.style.display=(reTarget.value && reTarget.value!=='Other')?'block':'none';
+ };
+ result.onclick=function(){result.dataset.state=result.dataset.state==='pass'?'fail':'pass';result.textContent=result.dataset.state==='pass'?'Pass':'Fail';result.className='resultToggle '+result.dataset.state;};
+ 
+ furtherDebug.onclick=function(){furtherDebug.dataset.state=furtherDebug.dataset.state==='on'?'off':'on';furtherDebug.textContent='Further debug: '+(furtherDebug.dataset.state==='on'?'ON':'OFF');furtherDebug.className='resultToggle furtherDebug '+furtherDebug.dataset.state;};
+ replaceResult.onclick=function(){replaceResult.dataset.state=replaceResult.dataset.state==='pass'?'still_failed':'pass';replaceResult.textContent=replaceResult.dataset.state==='pass'?'Pass':'Still Failed';replaceResult.className='resultToggle replaceResult '+(replaceResult.dataset.state==='pass'?'pass':'fail');};
+ row.appendChild(no);row.appendChild(moveControls);row.appendChild(action);row.appendChild(result);row.appendChild(custom);row.appendChild(reTarget);row.appendChild(cableInput);row.appendChild(partCustom);row.appendChild(partDetail);row.appendChild(replaceResult);row.appendChild(resistanceName);row.appendChild(resistanceResult);row.appendChild(resistanceOhms);row.appendChild(checkName);row.appendChild(checkResult);row.appendChild(ictTarget);row.appendChild(furtherDebug);row.appendChild(remove);
+ card.querySelector('.statusSteps').appendChild(row);renumberSteps(card);if(presetValue){action.value=presetValue;action.dispatchEvent(new Event('change',{bubbles:true}));}
+}
+function flashMoved(row){row.classList.remove('justMoved');void row.offsetWidth;row.classList.add('justMoved');setTimeout(function(){row.classList.remove('justMoved');},500);}
+function renumberSteps(card){
+ var rows=card.querySelectorAll('.stepRow');
+ for(var i=0;i<rows.length;i++){rows[i].querySelector('.stepNo').textContent=(i+1)+'.';var up=rows[i].querySelector('.moveStep[title="上移一步"]'),down=rows[i].querySelector('.moveStep[title="下移一步"]');if(up)up.disabled=i===0;if(down)down.disabled=i===rows.length-1;}
+}
+function updateErrorOptionsForStation(card){
+ var stationSel=card.querySelector('.station');
+ var station=stationSel.value==='__custom'?card.querySelector('.stationCustom').value.trim():stationSel.value;
+ var errorSelect=card.querySelector('.errorSelect');
+ var errorWrap=errorSelect.parentElement;
+ // iOS/Edge native select may ignore optgroup[hidden]. Keep a pristine copy,
+ // then physically rebuild the menu so unrelated station options do not appear.
+ if(!errorSelect._allErrorGroups){
+ errorSelect._allErrorGroups=Array.from(errorSelect.querySelectorAll('optgroup')).map(function(g){return g.cloneNode(true);});
+ }
+ var previous=errorSelect.selectedOptions[0];
+ var previousGroup=previous && previous.parentElement && previous.parentElement.tagName==='OPTGROUP' ? previous.parentElement.label : '';
+ var enabled=station==='R_JTAG'||station==='R_FT';
+ errorWrap.style.display=enabled?'block':'none';
+ errorSelect.disabled=!enabled;
+ if(enabled){
+ var keep=station==='R_JTAG'?'JTAG / CVF':null;
+ var placeholder=errorSelect.querySelector('option[value=""]');
+ var custom=errorSelect.querySelector('option[value="__custom"]');
+ errorSelect.replaceChildren();
+ if(placeholder)errorSelect.appendChild(placeholder.cloneNode(true));
+ if(custom)errorSelect.appendChild(custom.cloneNode(true));
+ errorSelect._allErrorGroups.forEach(function(group){
+ var label=(group.label||'').toLowerCase();
+ if(station==='R_JTAG' ? label==='jtag / cvf' : label!=='jtag / cvf') errorSelect.appendChild(group.cloneNode(true));
+ });
+ }
+ if(!enabled || (station==='R_JTAG' && previousGroup && previousGroup!=='JTAG / CVF') || (station==='R_FT' && previousGroup==='JTAG / CVF')){
+ errorSelect.value='';
+ card.querySelector('.errorCustom').value='';
+ card.querySelector('.errorCustom').style.display='none';
+ card.querySelector('.errorDetail').textContent='';
+ card.querySelector('.errorDetail').style.display='none';
+ }
+}
+
+function normalizeRepairText(value){
+ var text=String(value||'').trim().replace(/\s+/g,' ');
+ var corrections={swep:'Swap',swpe:'Swap',swapp:'Swap',reburm:'Reburn',reburnn:'Reburn',mgmt:'MGMT',osfp:'OSFP',jtag:'JTAG',dft:'DFT',bmc:'BMC',swb:'SWB',pdb:'PDB',ssd:'SSD',ict:'ICT',ntf:'NTF'};
+ text=text.replace(/\b[A-Za-z]+\b/g,function(word){var fixed=corrections[word.toLowerCase()];return fixed||word;});
+ text=text.replace(/\bpass\b/gi,'Pass').replace(/\bfail\b/gi,'Fail').replace(/\bmissing\b/gi,'Missing');
+ if(text) text=text.charAt(0).toUpperCase()+text.slice(1);
+ return text;
+}
+function addRecord(skipInitialStep){
+ var holder=document.createElement('div');
+ holder.innerHTML=templateHTML;
+ var card=holder.firstElementChild || holder.children[0];
+ card.querySelector('.remove').addEventListener('click',function(){records.removeChild(card);renumber();});
+ var station=card.querySelector('.station'),custom=card.querySelector('.stationCustom');
+ var errorSelect=card.querySelector('.errorSelect'),errorCustom=card.querySelector('.errorCustom'),errorAin=card.querySelector('.errorAin'),errorLoadType=card.querySelector('.errorLoadType');
+ function updateErrorDetail(){
+ errorCustom.style.display=errorSelect.value==='__custom'?'block':'none';
+ errorAin.style.display=errorSelect.value==='__swb_leakage'?'block':'none';
+ errorLoadType.style.display=errorSelect.value==='__monitoring_load'?'block':'none';
+ var detail=card.querySelector('.errorDetail');
+ var opt=errorSelect.options[errorSelect.selectedIndex];
+ var full='';
+ if(errorSelect.value==='__swb_leakage') full='a2d_leakage_monitoring-monitor_swb_leak_AIN'+errorAin.value+'-FAIL-MEASUREMENT';
+ else if(errorSelect.value==='__monitoring_load') full='monitoring_with_load-monitoring_'+errorLoadType.value+'_with_load-FAIL-MEASUREMENT;';
+ else if(errorSelect.value && errorSelect.value!=='__custom') full=errorSelect.value;
+ detail.textContent=full;
+ detail.style.display=full?'block':'none';
+ }
+ errorSelect.addEventListener('change',updateErrorDetail);
+ errorAin.addEventListener('change',updateErrorDetail);
+ errorLoadType.addEventListener('change',updateErrorDetail);
+ updateErrorDetail();
+ errorCustom.style.display='none';
+ var rcSelect=card.querySelector('.rcCode'),rcPartFields=card.querySelector('.rcPartFields'),rcPart=card.querySelector('.rcPart'),rcPartCustom=card.querySelector('.rcPartCustom');
+ function updateRCPart(){
+ var show=rcSelect.value==='RC48';
+ rcPartFields.classList.toggle('show',show);
+ if(!show){rcPart.value='';rcPartCustom.value='';}
+ rcPartCustom.style.display=show?'block':'none';
+ }
+ rcSelect.addEventListener('change',updateRCPart);
+ rcPart.addEventListener('change',function(){
+ rcPartCustom.style.display='block';
+ });
+ updateRCPart();
+ station.addEventListener('change',function(){custom.style.display=station.value==='__custom'?'block':'none';updateErrorOptionsForStation(card);});
+ updateErrorOptionsForStation(card);
+ card.querySelector('.addStep').onclick=function(){addStep(card);};
+ records.appendChild(card);if(!skipInitialStep)addStep(card);updateRCVisibility(card);renumber();return card;
+}
+function renumber(){
+ var cards=records.querySelectorAll('.record');
+ for(var i=0;i<cards.length;i++)cards[i].querySelector('.num').textContent=i+1;
+}
+function normalizeSubBin(value){
+ var v=(value||'').trim();
+ if(!v || /^(?:N\s*\/?\s*A|NOT\s+AVAILABLE|NONE)$/i.test(v)) return 'N/A';
+ return v;
+}
+
+function makeReport(){
+ var cards=records.querySelectorAll('.record'),blocks=[];
+ for(var i=0;i<cards.length;i++){
+ var c=cards[i],sn=c.querySelector('.sn').value.trim();
+ var stationSel=c.querySelector('.station');
+ var station=stationSel.value==='__custom'?c.querySelector('.stationCustom').value.trim():stationSel.value;
+ var errorSel=c.querySelector('.errorSelect');
+ var error=errorSel.value==='__custom'?c.querySelector('.errorCustom').value.trim():(errorSel.value==='__swb_leakage'?'a2d_leakage_monitoring-monitor_swb_leak_AIN'+c.querySelector('.errorAin').value+'-FAIL-MEASUREMENT':(errorSel.value==='__monitoring_load'?'monitoring_with_load-monitoring_'+c.querySelector('.errorLoadType').value+'_with_load-FAIL-MEASUREMENT;':errorSel.value.trim()));
+ var subbin=c.querySelector('.subbinText').value.trim();
+ if(!subbin || /^(?:N\s*\/?\s*A|NOT\s*AVAILABLE|NONE)$/i.test(subbin.replace(/\s+/g,''))) subbin='N/A';
+ var rcCode=c.querySelector('.rcCode').value;
+ var rcPart=c.querySelector('.rcPart').value;
+ var rcPartCustom=c.querySelector('.rcPartCustom').value.trim();
+ var rcPartName=rcPartCustom || (rcPart==='Other'?'':rcPart);
+ var netName=c.querySelector('.netNameText').value.trim();
+ var stepRows=c.querySelectorAll('.stepRow'),steps=[],hasReplacement=false,hasReburn=false,hasCheckOut=false;
+ for(var z=0;z<stepRows.length;z++){var zsel=stepRows[z].querySelector('.stepSelect');if(zsel&&zsel.value&&zsel.value!=='custom'){var zids=zsel.value.split('_'),zitem=statusGroups[Number(zids[0])]&&statusGroups[Number(zids[0])].items[Number(zids[1])];if(zitem&&zitem.label==='Check out')hasCheckOut=true;}}
+ if(!hasCheckOut){rcCode='';rcPartName='';}
+ for(var j=0;j<stepRows.length;j++){
+ var row=stepRows[j],sel=row.querySelector('.stepSelect'),step='',item=null;
+ if(sel.value==='custom')step=row.querySelector('.stepCustom').value.trim();
+ else if(sel.value){
+ var ids=sel.value.split('_');item=statusGroups[Number(ids[0])].items[Number(ids[1])];
+ if(item.result==='custom_text'){var detail=row.querySelector('.stepCustom').value.trim();step=item.label+(detail?' - '+detail:'');}
+ else if(item.result==='ict_handoff'){var ict=row.querySelector('.ictTarget').value.trim();var debugOn=row.querySelector('.furtherDebug').dataset.state==='on';step='Need RE do '+ict+' ICT'+(debugOn?' or need further debug':'');}
+ else if(item.result===true)step=item.label+' '+(row.querySelector('.resultToggle').dataset.state==='pass'?'passed':'failed');
+ else if(item.result==='resistance_test'){
+ var testName=row.querySelector('.resistanceName').value.trim();
+ var testResult=row.querySelector('.resistanceToggle').value;
+ var ohms=row.querySelector('.resistanceOhms').value.trim();
+ step=(testName)?'Test '+testName+' resistance '+(testResult==='open'?'Open':(testResult==='ok'?'OK':'Fail'+(ohms?' ('+ohms+' Ω)':''))):'';
+ }else if(item.result==='check_test'){
+ var checkText=row.querySelector('.checkName').value.trim();
+ var checkState=row.querySelector('.checkResult').value;
+ step=checkText?'Check '+checkText+' '+(checkState==='missing'?'Missing':(checkState==='ok'?'OK':'Fail')):'';
+ }else if(item.result==='assemble_handoff'){
+ var assembleTarget=row.querySelector('.reTarget').value;
+ var assembleCustom=row.querySelector('.partCustom').value.trim();
+ var assemblePart=assembleCustom || assembleTarget;
+ step=assemblePart?'Need RE to assemble '+assemblePart:'';
+ }else if(item.result==='reassemble_part'){ 
+ var reTargetValue=row.querySelector('.reTarget').value;
+ if(reTargetValue==='Cable'){
+ var cableNo=row.querySelector('.cableCustom').value.trim();
+ var cablePos=row.querySelector('.partDetail').value.trim();
+ step='Reassemble cable'+(cableNo?' '+cableNo:'')+(cablePos?' '+cablePos:'');
+ }else if(reTargetValue==='Other'){
+ var otherPart=row.querySelector('.partCustom').value.trim();
+ step=otherPart?'Reassemble '+otherPart:'';
+ }else if(reTargetValue){
+ var reDetail=row.querySelector('.partDetail').value.trim();
+ step='Reassemble '+reTargetValue+(reDetail?' '+reDetail:'');
+ }
+ }else if(item.result==='replace_part'||item.result==='handoff_part'){
+ var target=row.querySelector('.reTarget').value;
+ var replaceSuffix=item.result==='replace_part'?' - '+(row.querySelector('.replaceResult').dataset.state==='pass'?'Pass':'Still Failed'):'';
+ if(target==='Cable'){
+ var cable=row.querySelector('.cableCustom').value.trim();
+ var cableDetail=row.querySelector('.partDetail').value.trim();
+ step=item.label+' cable'+(cable?' '+cable:'')+(cableDetail?' '+cableDetail:'')+replaceSuffix;
+ }else if(target==='Other'){
+ var part=row.querySelector('.partCustom').value.trim();
+ step=part?item.label+' '+part+replaceSuffix:'';
+ }else if(target){var detail=row.querySelector('.partDetail').value.trim();step=item.label+' '+target+(detail?' '+detail:'')+replaceSuffix;}
+ }else step=item.label+(item.defaultText?' '+item.defaultText:'');
+ }
+ if(step){step=normalizeRepairText(step);steps.push(step);if(item && item.result==='replace_part')hasReplacement=true;if(step.indexOf('Reburn JTAG')===0)hasReburn=true;}
+ }
+ if(hasReplacement&&!hasReburn)steps.push('Reburn JTAG');
+ if(!sn&&!error&&!steps.length&&!subbin&&!netName&&!rcCode&&!rcPartName)continue;
+ var lines=[];
+ if(sn)lines.push('SN: '+sn);
+ if(station)lines.push('Station: '+station);
+ if(error)lines.push('Error Code: '+error);
+ lines.push('Status:\nSUB-BIN: '+subbin+(steps.length?'\n'+steps.map(function(x,i){return (i+1)+'. '+x;}).join('\n'):''));
+ if(netName)lines.push('NET NAME: '+netName);
+ if(rcCode)lines.push(rcCode+(rcCode==='RC48'&&rcPartName?' — '+rcPartName:''));
+ blocks.push(lines.join('\n'));
+ }
+ document.getElementById('output').value=blocks.join('\n\n');
+ document.getElementById('count').textContent=blocks.length+' 筆';
+}
+document.getElementById('add').onclick=addRecord;
+document.getElementById('generate').onclick=function(){try{makeReport();}catch(e){var out=document.getElementById('output');out.value='產生失敗：'+(e&&e.message?e.message:String(e));document.getElementById('count').textContent='請回報此錯誤';}};
+document.getElementById('copy').onclick=async function(){
+ var out=document.getElementById('output');
+ if(!out.value)return;
+ var btn=document.getElementById('copy'),copied=false;
+ try{
+ if(navigator.clipboard && navigator.clipboard.writeText){
+ await navigator.clipboard.writeText(out.value);
+ copied=true;
+ }
+ }catch(e){}
+ if(!copied){
+ out.focus();out.select();
+ try{copied=document.execCommand('copy');}catch(e){}
+ }
+ if(copied){btn.textContent='已複製純文字！';window.setTimeout(function(){btn.textContent='複製全部';},1500);}
+ else{btn.textContent='請長按輸出框複製';}
+};
+
+document.getElementById('dailyReport').onclick=function(){
+ var out=document.getElementById('output');
+ var raw=out.value.trim();
+ if(!raw){alert('請先貼上整日的報告');return;}
+ var blocks=raw.split(/\n\s*\n+/).map(function(b){return b.trim();}).filter(Boolean);
+ var formatted=[];
+ blocks.forEach(function(block){
+ var lines=block.split(/\r?\n/).filter(function(line){
+ return !/^\s*(?:RC\s*:\s*)?RC(?:35|56|48)(?:\s*[—-].*)?\s*$/i.test(line);
+ });
+ // Keep only actual repair records. Date headings, notes, and other text are discarded.
+ if(!lines.some(function(line){return /^\s*SN\s*:/i.test(line);})) return;
+ // Remove an existing (n) heading wherever it appears at the start of the block.
+ while(lines.length && /^\s*\(\d+\)\s*$/.test(lines[0])) lines.shift();
+ if(!lines.length) return;
+ lines[0]=lines[0].replace(/^\s*\(\d+\)\s*/, '');
+ var statusIndex=lines.findIndex(function(line){return /^\s*Status\s*[:：]/i.test(line);});
+ var subbinIndex=lines.findIndex(function(line){return /^\s*SUB\s*[-_ ]?\s*BIN\s*[:：]/i.test(line);});
+ if(subbinIndex>=0){
+ var existing=lines[subbinIndex].replace(/^\s*SUB\s*[-_ ]?\s*BIN\s*[:：]\s*/i,'');
+ lines[subbinIndex]='SUB-BIN: '+normalizeSubBin(existing);
+ }else if(statusIndex>=0){
+ lines.splice(statusIndex+1,0,'SUB-BIN: N/A');
+ }else{
+ var firstStep=lines.findIndex(function(line){return /^\s*\d+\s*[.)]/.test(line);});
+ lines.splice(firstStep>=0?firstStep:lines.length,0,'Status:','SUB-BIN: N/A');
+ }
+ formatted.push('('+(formatted.length+1)+')\n'+lines.join('\n'));
+ });
+ out.value=formatted.join('\n\n');
+ document.getElementById('count').textContent=formatted.length+' 筆一日報告';
+};
+
+document.getElementById('clear').onclick=function(){
+ var out=document.getElementById('output');
+ out.value='';
+ document.getElementById('count').textContent='';
+};
+
+document.getElementById('parseOutput').onclick=function(){
+ var text=document.getElementById('output').value.trim();
+ if(!text){alert('輸出欄目前是空的');return;}
+ var chunks=text.split(/\n\s*\n+/).map(function(x){return x.trim();}).filter(Boolean);
+ records.innerHTML='';
+ chunks.forEach(function(block){
+ var c=addRecord(true);
+ var lines=block.split(/\r?\n/), statusLines=[];
+ var inStatus=false;
+ c.querySelector('.subbinText').value='N/A';
+ lines.forEach(function(line){
+ // Repair steps may appear after SUB-BIN or other metadata fields.
+ // Detect numbered steps independently of the Status header position.
+ var stepMatch=line.match(/^\s*\d+\s*[.)]\s*(.*)$/);
+ if(stepMatch && stepMatch[1].trim()){
+ statusLines.push(stepMatch[1].trim());
+ return;
+ }
+ var m=line.match(/^\s*(SN|Station|Error Code|NET\s*NAME|SUB\s*[-_ ]?\s*BIN)[:：]\s*(.*)$/i);
+ if(m){
+ inStatus=false;
+ var key=m[1].toUpperCase().replace(/\s+/g,' ').replace(/[_ ]/g,'').replace('SUB-BIN','SUBBIN'),val=m[2].trim();
+ if(key==='SUBBIN' && /^(?:N\s*\/?\s*A|NOT\s*AVAILABLE|NONE)$/i.test(val.replace(/\s+/g,''))) val='N/A';
+ if(key==='SN') c.querySelector('.sn').value=val;
+ else if(key==='STATION'){
+ var sel=c.querySelector('.station');
+ if(Array.from(sel.options).some(function(o){return o.value===val;})) sel.value=val;
+ else {sel.value='__custom';c.querySelector('.stationCustom').style.display='block';c.querySelector('.stationCustom').value=val;}
+ sel.dispatchEvent(new Event('change'));
+ }else if(key==='ERROR CODE'){
+ var es=c.querySelector('.errorSelect');
+ var match=Array.from(es.options).find(function(o){return o.value===val;});
+ if(match) es.value=val;
+ else if(val==='monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;' || val==='monitoring_with_load-monitoring_osfp_with_load-FAIL-MEASUREMENT;'){
+ es.value='__monitoring_load';c.querySelector('.errorLoadType').value=val.indexOf('_osfp_')>=0?'osfp':'vrs';
+ }
+ else {es.value='__custom';c.querySelector('.errorCustom').style.display='block';c.querySelector('.errorCustom').value=val;}
+ es.dispatchEvent(new Event('change'));
+ }else if(key==='NETNAME') c.querySelector('.netNameText').value=val;
+ else if(key==='SUBBIN') c.querySelector('.subbinText').value=normalizeSubBin(val);
+ else if(key==='RC'){
+ var rcVal=val.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
+ if(rcVal){c.querySelector('.rcCode').value=rcVal[1];if(rcVal[1]==='RC48'&&rcVal[2]){var ps=c.querySelector('.rcPart'),pt=rcVal[2].trim(),po=Array.from(ps.options).find(function(o){return o.value===pt;});if(po)ps.value=pt;else{ps.value='Other';c.querySelector('.rcPartCustom').value=pt;}ps.dispatchEvent(new Event('change'));}c.querySelector('.rcCode').dispatchEvent(new Event('change'));}
+ }
+ }else if(/^RC(?:35|56|48)(?:\s*[—-]\s*(.*))?$/.test(line.trim())){ 
+ var rcMatch=line.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
+ c.querySelector('.rcCode').value=rcMatch[1];
+ if(rcMatch[1]==='RC48'&&rcMatch[2]){
+ var partText=rcMatch[2].trim(),partSel=c.querySelector('.rcPart');
+ var partOpt=Array.from(partSel.options).find(function(o){return o.value===partText;});
+ if(partOpt)partSel.value=partText;
+ else {partSel.value='Other';c.querySelector('.rcPartCustom').value=partText;}
+ c.querySelector('.rcPart').dispatchEvent(new Event('change'));
+ }
+ c.querySelector('.rcCode').dispatchEvent(new Event('change'));
+ inStatus=false;
+ }
+ else if(/^Status[:：]\s*$/i.test(line.trim())) inStatus=true;
+ else if(inStatus && line.trim()) statusLines.push(line.replace(/^\s*\d+\.\s*/, '').trim());
+ });
+ statusLines.forEach(function(st,idx){
+ var row=idx===0?c.querySelector('.stepRow'):null;
+ if(!row){addStep(c);row=c.querySelectorAll('.stepRow')[c.querySelectorAll('.stepRow').length-1];}
+ var sel=row.querySelector('.stepSelect'), low=st.toLowerCase(), matched=false;
+ function choose(label){
+ for(var gi=0;gi<statusGroups.length;gi++)for(var ii=0;ii<statusGroups[gi].items.length;ii++)if(statusGroups[gi].items[ii].label===label){sel.value=gi+'_'+ii;sel.dispatchEvent(new Event('change',{bubbles:true}));return true;}
+ return false;
+ }
+ function setTarget(target){
+ var rt=row.querySelector('.reTarget'), found=Array.from(rt.options).find(function(o){return o.value.toLowerCase()===target.toLowerCase();});
+ if(found){rt.value=found.value;rt.dispatchEvent(new Event('change',{bubbles:true}));return true;}
+ rt.value='Other';rt.dispatchEvent(new Event('change',{bubbles:true}));row.querySelector('.partCustom').value=target;return false;
+ }
+ var m;
+ // Common pass/fail test actions.
+ if((m=st.match(/^Check\s+(.+?)\s+(OK|Fail|Missing)(?:\s+.*)?$/i))){
+ choose('Check');row.querySelector('.checkName').value=m[1].trim();row.querySelector('.checkResult').value=m[2].toLowerCase();matched=true;
+ }else if((m=st.match(/^Test\s+(.+?)\s+resistance\s+(OK|Fail|Open)(?:\s*\((.*?)\s*Ω?\))?$/i))){
+ choose('Test resistance');row.querySelector('.resistanceName').value=m[1].trim();row.querySelector('.resistanceResult').value=m[2].toLowerCase();if(m[2].toLowerCase()==='fail'&&m[3]){row.querySelector('.resistanceOhms').style.display='block';row.querySelector('.resistanceOhms').value=m[3].replace(/\s*Ω$/,'').trim();}matched=true;
+ }else if((m=st.match(/^Need RE to assemble\s+(.+)$/i))){choose('Need RE to assemble');setTarget(m[1].trim());matched=true;
+ }else if((m=st.match(/^Need RE to (change|rework)\s+(.+)$/i))){choose(m[1].toLowerCase()==='change'?'Need RE to change':'Need RE to rework');setTarget(m[2].trim());matched=true;
+ }else if((m=st.match(/^Reassemble\s+(?:cable\s*)?(.+?)(?:\s+-\s*(?:pass|still failed))?$/i))){
+ choose('Reassemble');var part=m[1].trim();if(/^cable/i.test(st)){setTarget('Cable');row.querySelector('.cableCustom').value=part.replace(/^cable\s*/i,'');row.querySelector('.cableCustom').style.display='block';}else setTarget(part);matched=true;
+ }else if((m=st.match(/^Replace\s+(.+?)(?:\s+-\s*(Pass|Still Failed))?$/i))){
+ choose('Replace');setTarget(m[1].trim());if(m[2]){var rb=row.querySelector('.replaceResult');rb.dataset.state=m[2].toLowerCase()==='pass'?'pass':'fail';rb.textContent=m[2];}matched=true;
+ }else if((m=st.match(/^(Reburn JTAG|Retest DFT|ICT)\s+(?:still\s+)?(?:power on\s+)?(pass(?:ed)?|fail(?:ed)?)$/i))){choose(m[1]);var tog=row.querySelector('.resultToggle');var isPass=/^pass/i.test(m[2]);tog.dataset.state=isPass?'pass':'fail';tog.textContent=isPass?'Pass':'Fail';matched=true;
+ }else if((m=st.match(/^Reassembly\s+(.+?)\s+(?:still\s+)?fail(?:ed)?$/i))){choose('Reassemble');setTarget(m[1].trim());matched=true;
+ }else if(/^(NTF|Need further debug|Check out)$/i.test(st)){choose(st);matched=true;
+ }else if((m=st.match(/^Need RE do\s+(.+?)\s+ICT(?:\s+or need further debug)?$/i))){choose('Need RE do ICT');row.querySelector('.ictTarget').value=m[1].trim();if(/or need further debug/i.test(st)){var fd=row.querySelector('.furtherDebug');fd.dataset.state='on';fd.textContent='Further debug: ON';}matched=true;
+ }
+ if(!matched){sel.value='custom';sel.dispatchEvent(new Event('change',{bubbles:true}));row.querySelector('.stepCustom').value=st;}
+ });
+ });
+ renumber();
+ document.getElementById('count').textContent=chunks.length+' 筆已回填';
+};
+
+addRecord();
+
+</script>
+</body></html>
