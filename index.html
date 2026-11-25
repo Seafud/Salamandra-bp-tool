@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Salamandra SN Report Generator V68</title>
+<title>Salamandra SN Report Generator V72</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#202124;background:#f4f6f8}
 *{box-sizing:border-box}body{margin:0;padding:16px}.wrap{max-width:900px;margin:auto}
@@ -114,8 +114,8 @@ button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650
 
 </div>
 </div>
-<div><label>Station</label><select class="station"><option>R_JTAG</option><option>R_FT</option><option>B30M</option><option value="__custom">自訂輸入</option></select><input class="stationCustom customField" placeholder="輸入 Station" style="display:none;margin-top:6px"></div>
-<div class="full"><label>Error Code</label><div class="small">Station 選 R_JTAG 顯示 JTAG/CVF；選 R_FT 顯示 FT 測試項目。</div>
+<div><label>Station</label><select class="station"><option>JTAG</option><option>FT</option><option>LC245</option></select><input class="stationCustom customField" placeholder="輸入 Station" style="display:none;margin-top:6px"></div>
+<div class="full"><label>Error Code</label><div class="small">JTAG 顯示 JTAG/CVF；FT 顯示 FT 測試項目；LC245 可自訂 Error Code。</div>
 <select class="errorSelect">
 <option value="">請選擇 Error Code</option>
 <option value="__custom">自訂輸入</option>
@@ -210,35 +210,35 @@ var records=document.getElementById('records');
 var templateHTML=document.getElementById('recordTemplate').innerHTML;
 var statusGroups=[
  {name:'檢查／測試',items:[
- {label:'Check',result:'check_test'},
- {label:'Test resistance',result:'resistance_test'}
+  {label:'Check',result:'check_test'},
+  {label:'Test resistance',result:'resistance_test'}
  ]},
  {name:'維修／處理',items:[
- {label:'Reburn JTAG',result:true},{label:'Retest DFT',result:true},{label:'ICT',result:true},
- {label:'Reassemble',result:'reassemble_part'},
- {label:'Replace',result:'replace_part'},{label:'Need RE to change',result:'handoff_part'},{label:'Need RE to rework',result:'handoff_part'},
- {label:'Need RE do ICT',result:'ict_handoff'},
- {label:'Need RE to assemble',result:'assemble_handoff'}
+  {label:'Reburn JTAG',result:true},{label:'Retest DFT',result:true},{label:'ICT',result:true},
+  {label:'Reassemble',result:'reassemble_part'},
+  {label:'Replace',result:'replace_part'},{label:'Need RE to change',result:'handoff_part'},{label:'Need RE to rework',result:'handoff_part'},
+  {label:'Need RE do ICT',result:'ict_handoff'},
+  {label:'Need RE to assemble',result:'assemble_handoff'}
  ]},
  {name:'其他',items:[
- {label:'NTF',result:null},{label:'Need further debug',result:null},{label:'Check out',result:null},{label:'自訂輸入',result:'custom'}
+  {label:'NTF',result:null},{label:'Need further debug',result:null},{label:'Check out',result:null},{label:'自訂輸入',result:'custom'}
  ]}
 ];
 function updateRCVisibility(card){
  var found=false;
  card.querySelectorAll('.stepRow').forEach(function(row){
- var sel=row.querySelector('.stepSelect');
- if(!sel||!sel.value||sel.value==='custom')return;
- var ids=sel.value.split('_'),item=statusGroups[Number(ids[0])]&&statusGroups[Number(ids[0])].items[Number(ids[1])];
- if(item&&item.label==='Check out')found=true;
+  var sel=row.querySelector('.stepSelect');
+  if(!sel||!sel.value||sel.value==='custom')return;
+  var ids=sel.value.split('_'),item=statusGroups[Number(ids[0])]&&statusGroups[Number(ids[0])].items[Number(ids[1])];
+  if(item&&item.label==='Check out')found=true;
  });
  var section=card.querySelector('.rcSection');
  section.style.display=found?'block':'none';
  if(!found){
- card.querySelector('.rcCode').value='';
- card.querySelector('.rcPart').value='';
- card.querySelector('.rcPartCustom').value='';
- card.querySelector('.rcPartFields').classList.remove('show');
+  card.querySelector('.rcCode').value='';
+  card.querySelector('.rcPart').value='';
+  card.querySelector('.rcPartCustom').value='';
+  card.querySelector('.rcPartFields').classList.remove('show');
  }
 }
 function addStep(card, presetValue){
@@ -254,11 +254,11 @@ function addStep(card, presetValue){
  var first=document.createElement('option');first.value='';first.textContent='選擇 Status';action.appendChild(first);
  var customOption=document.createElement('option');customOption.value='custom';customOption.textContent='自訂輸入 …';action.appendChild(customOption);
  for(var i=0;i<statusGroups.length;i++){
- var og=document.createElement('optgroup');og.label=statusGroups[i].name;
- for(var k=0;k<statusGroups[i].items.length;k++){
- var op=document.createElement('option');op.value=i+'_'+k;var optItem=statusGroups[i].items[k];op.textContent=optItem.label+(['replace_part','handoff_part','resistance_test','check_test','ict_handoff','reassemble_part','assemble_handoff'].indexOf(optItem.result)>=0?' …':'');og.appendChild(op);
- }
- action.appendChild(og);
+  var og=document.createElement('optgroup');og.label=statusGroups[i].name;
+  for(var k=0;k<statusGroups[i].items.length;k++){
+   var op=document.createElement('option');op.value=i+'_'+k;var optItem=statusGroups[i].items[k];op.textContent=optItem.label+(['replace_part','handoff_part','resistance_test','check_test','ict_handoff','reassemble_part','assemble_handoff'].indexOf(optItem.result)>=0?' …':'');og.appendChild(op);
+  }
+  action.appendChild(og);
  }
  var result=document.createElement('button');result.type='button';result.className='resultToggle';result.textContent='Pass';result.style.display='none';result.dataset.state='pass';
  var custom=document.createElement('input');custom.className='stepCustom';custom.placeholder='輸入 Status 內容…';custom.style.display='none';
@@ -282,29 +282,29 @@ function addStep(card, presetValue){
  var remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.title='刪除此步驟';
  remove.onclick=function(){row.parentNode.removeChild(row);renumberSteps(card);updateRCVisibility(card);};
  action.onchange=function(){
- updateRCVisibility(card);
- custom.style.display='none';result.style.display='none';reTarget.style.display='none';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';replaceResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
- row.classList.remove('resistanceMode','checkMode');
- if(action.value==='custom'){custom.style.display='block';return;}
- if(!action.value)return;
- var ids=action.value.split('_'),item=statusGroups[Number(ids[0])].items[Number(ids[1])];
- if(item.result==='custom_text'){custom.style.display='block';custom.placeholder='補充內容…';}
- if(item.result==='ict_handoff'){ictTarget.style.display='block';furtherDebug.style.display='inline-block';furtherDebug.textContent='Further debug: OFF';furtherDebug.dataset.state='off';furtherDebug.className='resultToggle furtherDebug';}
- if(item.result===true){result.style.display='inline-block';result.textContent='Pass';result.dataset.state='pass';result.className='resultToggle pass';}
- if(item.result==='reassemble_part'){reTarget.style.display='block';}
- if(item.result==='assemble_handoff'){reTarget.style.display='block';partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
- if(item.result==='replace_part'){reTarget.style.display='block';replaceResult.style.display='inline-block';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.className='resultToggle replaceResult pass';}
- if(item.result==='handoff_part'){reTarget.style.display='block';}
- if(item.result==='resistance_test'){row.classList.add('resistanceMode');resistanceName.style.display='block';resistanceResult.style.display='block';resistanceResult.value='ok';resistanceOhms.style.display='none';resistanceOhms.value='';}
- if(item.result==='check_test'){row.classList.add('checkMode');checkName.style.display='block';checkResult.style.display='block';checkResult.value='ok';}
+  updateRCVisibility(card);
+  custom.style.display='none';result.style.display='none';reTarget.style.display='none';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';replaceResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
+  row.classList.remove('resistanceMode','checkMode');
+  if(action.value==='custom'){custom.style.display='block';return;}
+  if(!action.value)return;
+  var ids=action.value.split('_'),item=statusGroups[Number(ids[0])].items[Number(ids[1])];
+  if(item.result==='custom_text'){custom.style.display='block';custom.placeholder='補充內容…';}
+  if(item.result==='ict_handoff'){ictTarget.style.display='block';furtherDebug.style.display='inline-block';furtherDebug.textContent='Further debug: OFF';furtherDebug.dataset.state='off';furtherDebug.className='resultToggle furtherDebug';}
+  if(item.result===true){result.style.display='inline-block';result.textContent='Pass';result.dataset.state='pass';result.className='resultToggle pass';}
+  if(item.result==='reassemble_part'){reTarget.style.display='block';}
+  if(item.result==='assemble_handoff'){reTarget.style.display='block';partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
+  if(item.result==='replace_part'){reTarget.style.display='block';replaceResult.style.display='inline-block';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.className='resultToggle replaceResult pass';}
+  if(item.result==='handoff_part'){reTarget.style.display='block';}
+  if(item.result==='resistance_test'){row.classList.add('resistanceMode');resistanceName.style.display='block';resistanceResult.style.display='block';resistanceResult.value='ok';resistanceOhms.style.display='none';resistanceOhms.value='';}
+  if(item.result==='check_test'){row.classList.add('checkMode');checkName.style.display='block';checkResult.style.display='block';checkResult.value='ok';}
  };
  resistanceResult.onchange=function(){resistanceOhms.style.display=resistanceResult.value==='fail'?'block':'none';if(resistanceResult.value!=='fail')resistanceOhms.value='';};
  reTarget.onchange=function(){
- var chosen=action.value?statusGroups[Number(action.value.split('_')[0])].items[Number(action.value.split('_')[1])]:null;
- if(chosen&&chosen.result==='assemble_handoff'){partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
- cableInput.style.display=reTarget.value==='Cable'?'block':'none';
- partCustom.style.display=(reTarget.value==='Other'||(chosen&&chosen.result==='assemble_handoff'))?'block':'none';
- partDetail.style.display=(reTarget.value && reTarget.value!=='Other')?'block':'none';
+  var chosen=action.value?statusGroups[Number(action.value.split('_')[0])].items[Number(action.value.split('_')[1])]:null;
+  if(chosen&&chosen.result==='assemble_handoff'){partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
+  cableInput.style.display=reTarget.value==='Cable'?'block':'none';
+  partCustom.style.display=(reTarget.value==='Other'||(chosen&&chosen.result==='assemble_handoff'))?'block':'none';
+  partDetail.style.display=(reTarget.value && reTarget.value!=='Other')?'block':'none';
  };
  result.onclick=function(){result.dataset.state=result.dataset.state==='pass'?'fail':'pass';result.textContent=result.dataset.state==='pass'?'Pass':'Fail';result.className='resultToggle '+result.dataset.state;};
  
@@ -320,37 +320,36 @@ function renumberSteps(card){
 }
 function updateErrorOptionsForStation(card){
  var stationSel=card.querySelector('.station');
- var station=stationSel.value==='__custom'?card.querySelector('.stationCustom').value.trim():stationSel.value;
+ var station=stationSel.value;
  var errorSelect=card.querySelector('.errorSelect');
  var errorWrap=errorSelect.parentElement;
- // iOS/Edge native select may ignore optgroup[hidden]. Keep a pristine copy,
- // then physically rebuild the menu so unrelated station options do not appear.
  if(!errorSelect._allErrorGroups){
- errorSelect._allErrorGroups=Array.from(errorSelect.querySelectorAll('optgroup')).map(function(g){return g.cloneNode(true);});
+  errorSelect._allErrorGroups=Array.from(errorSelect.querySelectorAll('optgroup')).map(function(g){return g.cloneNode(true);});
  }
  var previous=errorSelect.selectedOptions[0];
  var previousGroup=previous && previous.parentElement && previous.parentElement.tagName==='OPTGROUP' ? previous.parentElement.label : '';
- var enabled=station==='R_JTAG'||station==='R_FT';
- errorWrap.style.display=enabled?'block':'none';
- errorSelect.disabled=!enabled;
- if(enabled){
- var keep=station==='R_JTAG'?'JTAG / CVF':null;
  var placeholder=errorSelect.querySelector('option[value=""]');
  var custom=errorSelect.querySelector('option[value="__custom"]');
  errorSelect.replaceChildren();
  if(placeholder)errorSelect.appendChild(placeholder.cloneNode(true));
  if(custom)errorSelect.appendChild(custom.cloneNode(true));
- errorSelect._allErrorGroups.forEach(function(group){
- var label=(group.label||'').toLowerCase();
- if(station==='R_JTAG' ? label==='jtag / cvf' : label!=='jtag / cvf') errorSelect.appendChild(group.cloneNode(true));
- });
+ if(station==='JTAG' || station==='FT'){
+  errorSelect._allErrorGroups.forEach(function(group){
+   var label=(group.label||'').toLowerCase();
+   if(station==='JTAG' ? label==='jtag / cvf' : label!=='jtag / cvf') errorSelect.appendChild(group.cloneNode(true));
+  });
+  errorWrap.style.display='block'; errorSelect.disabled=false;
+ }else if(station==='LC245'){
+  errorWrap.style.display='block'; errorSelect.disabled=false;
+ }else{
+  errorWrap.style.display='none'; errorSelect.disabled=true;
  }
- if(!enabled || (station==='R_JTAG' && previousGroup && previousGroup!=='JTAG / CVF') || (station==='R_FT' && previousGroup==='JTAG / CVF')){
- errorSelect.value='';
- card.querySelector('.errorCustom').value='';
- card.querySelector('.errorCustom').style.display='none';
- card.querySelector('.errorDetail').textContent='';
- card.querySelector('.errorDetail').style.display='none';
+ if((station==='JTAG' && previousGroup && previousGroup!=='JTAG / CVF') || (station==='FT' && previousGroup==='JTAG / CVF') || station==='LC245' || !station){
+  errorSelect.value='';
+  card.querySelector('.errorCustom').value='';
+  card.querySelector('.errorCustom').style.display='none';
+  card.querySelector('.errorDetail').textContent='';
+  card.querySelector('.errorDetail').style.display='none';
  }
 }
 
@@ -370,17 +369,17 @@ function addRecord(skipInitialStep){
  var station=card.querySelector('.station'),custom=card.querySelector('.stationCustom');
  var errorSelect=card.querySelector('.errorSelect'),errorCustom=card.querySelector('.errorCustom'),errorAin=card.querySelector('.errorAin'),errorLoadType=card.querySelector('.errorLoadType');
  function updateErrorDetail(){
- errorCustom.style.display=errorSelect.value==='__custom'?'block':'none';
- errorAin.style.display=errorSelect.value==='__swb_leakage'?'block':'none';
- errorLoadType.style.display=errorSelect.value==='__monitoring_load'?'block':'none';
- var detail=card.querySelector('.errorDetail');
- var opt=errorSelect.options[errorSelect.selectedIndex];
- var full='';
- if(errorSelect.value==='__swb_leakage') full='a2d_leakage_monitoring-monitor_swb_leak_AIN'+errorAin.value+'-FAIL-MEASUREMENT';
- else if(errorSelect.value==='__monitoring_load') full='monitoring_with_load-monitoring_'+errorLoadType.value+'_with_load-FAIL-MEASUREMENT;';
- else if(errorSelect.value && errorSelect.value!=='__custom') full=errorSelect.value;
- detail.textContent=full;
- detail.style.display=full?'block':'none';
+  errorCustom.style.display=errorSelect.value==='__custom'?'block':'none';
+  errorAin.style.display=errorSelect.value==='__swb_leakage'?'block':'none';
+  errorLoadType.style.display=errorSelect.value==='__monitoring_load'?'block':'none';
+  var detail=card.querySelector('.errorDetail');
+  var opt=errorSelect.options[errorSelect.selectedIndex];
+  var full='';
+  if(errorSelect.value==='__swb_leakage') full='a2d_leakage_monitoring-monitor_swb_leak_AIN'+errorAin.value+'-FAIL-MEASUREMENT';
+  else if(errorSelect.value==='__monitoring_load') full='monitoring_with_load-monitoring_'+errorLoadType.value+'_with_load-FAIL-MEASUREMENT;';
+  else if(errorSelect.value && errorSelect.value!=='__custom') full=errorSelect.value;
+  detail.textContent=full;
+  detail.style.display=full?'block':'none';
  }
  errorSelect.addEventListener('change',updateErrorDetail);
  errorAin.addEventListener('change',updateErrorDetail);
@@ -389,14 +388,14 @@ function addRecord(skipInitialStep){
  errorCustom.style.display='none';
  var rcSelect=card.querySelector('.rcCode'),rcPartFields=card.querySelector('.rcPartFields'),rcPart=card.querySelector('.rcPart'),rcPartCustom=card.querySelector('.rcPartCustom');
  function updateRCPart(){
- var show=rcSelect.value==='RC48';
- rcPartFields.classList.toggle('show',show);
- if(!show){rcPart.value='';rcPartCustom.value='';}
- rcPartCustom.style.display=show?'block':'none';
+  var show=rcSelect.value==='RC48';
+  rcPartFields.classList.toggle('show',show);
+  if(!show){rcPart.value='';rcPartCustom.value='';}
+  rcPartCustom.style.display=show?'block':'none';
  }
  rcSelect.addEventListener('change',updateRCPart);
  rcPart.addEventListener('change',function(){
- rcPartCustom.style.display='block';
+  rcPartCustom.style.display='block';
  });
  updateRCPart();
  station.addEventListener('change',function(){custom.style.display=station.value==='__custom'?'block':'none';updateErrorOptionsForStation(card);});
@@ -417,81 +416,81 @@ function normalizeSubBin(value){
 function makeReport(){
  var cards=records.querySelectorAll('.record'),blocks=[];
  for(var i=0;i<cards.length;i++){
- var c=cards[i],sn=c.querySelector('.sn').value.trim();
- var stationSel=c.querySelector('.station');
- var station=stationSel.value==='__custom'?c.querySelector('.stationCustom').value.trim():stationSel.value;
- var errorSel=c.querySelector('.errorSelect');
- var error=errorSel.value==='__custom'?c.querySelector('.errorCustom').value.trim():(errorSel.value==='__swb_leakage'?'a2d_leakage_monitoring-monitor_swb_leak_AIN'+c.querySelector('.errorAin').value+'-FAIL-MEASUREMENT':(errorSel.value==='__monitoring_load'?'monitoring_with_load-monitoring_'+c.querySelector('.errorLoadType').value+'_with_load-FAIL-MEASUREMENT;':errorSel.value.trim()));
- var subbin=c.querySelector('.subbinText').value.trim();
- if(!subbin || /^(?:N\s*\/?\s*A|NOT\s*AVAILABLE|NONE)$/i.test(subbin.replace(/\s+/g,''))) subbin='N/A';
- var rcCode=c.querySelector('.rcCode').value;
- var rcPart=c.querySelector('.rcPart').value;
- var rcPartCustom=c.querySelector('.rcPartCustom').value.trim();
- var rcPartName=rcPartCustom || (rcPart==='Other'?'':rcPart);
- var netName=c.querySelector('.netNameText').value.trim();
- var stepRows=c.querySelectorAll('.stepRow'),steps=[],hasReplacement=false,hasReburn=false,hasCheckOut=false;
- for(var z=0;z<stepRows.length;z++){var zsel=stepRows[z].querySelector('.stepSelect');if(zsel&&zsel.value&&zsel.value!=='custom'){var zids=zsel.value.split('_'),zitem=statusGroups[Number(zids[0])]&&statusGroups[Number(zids[0])].items[Number(zids[1])];if(zitem&&zitem.label==='Check out')hasCheckOut=true;}}
- if(!hasCheckOut){rcCode='';rcPartName='';}
- for(var j=0;j<stepRows.length;j++){
- var row=stepRows[j],sel=row.querySelector('.stepSelect'),step='',item=null;
- if(sel.value==='custom')step=row.querySelector('.stepCustom').value.trim();
- else if(sel.value){
- var ids=sel.value.split('_');item=statusGroups[Number(ids[0])].items[Number(ids[1])];
- if(item.result==='custom_text'){var detail=row.querySelector('.stepCustom').value.trim();step=item.label+(detail?' - '+detail:'');}
- else if(item.result==='ict_handoff'){var ict=row.querySelector('.ictTarget').value.trim();var debugOn=row.querySelector('.furtherDebug').dataset.state==='on';step='Need RE do '+ict+' ICT'+(debugOn?' or need further debug':'');}
- else if(item.result===true)step=item.label+' '+(row.querySelector('.resultToggle').dataset.state==='pass'?'passed':'failed');
- else if(item.result==='resistance_test'){
- var testName=row.querySelector('.resistanceName').value.trim();
- var testResult=row.querySelector('.resistanceToggle').value;
- var ohms=row.querySelector('.resistanceOhms').value.trim();
- step=(testName)?'Test '+testName+' resistance '+(testResult==='open'?'Open':(testResult==='ok'?'OK':'Fail'+(ohms?' ('+ohms+' Ω)':''))):'';
- }else if(item.result==='check_test'){
- var checkText=row.querySelector('.checkName').value.trim();
- var checkState=row.querySelector('.checkResult').value;
- step=checkText?'Check '+checkText+' '+(checkState==='missing'?'Missing':(checkState==='ok'?'OK':'Fail')):'';
- }else if(item.result==='assemble_handoff'){
- var assembleTarget=row.querySelector('.reTarget').value;
- var assembleCustom=row.querySelector('.partCustom').value.trim();
- var assemblePart=assembleCustom || assembleTarget;
- step=assemblePart?'Need RE to assemble '+assemblePart:'';
- }else if(item.result==='reassemble_part'){ 
- var reTargetValue=row.querySelector('.reTarget').value;
- if(reTargetValue==='Cable'){
- var cableNo=row.querySelector('.cableCustom').value.trim();
- var cablePos=row.querySelector('.partDetail').value.trim();
- step='Reassemble cable'+(cableNo?' '+cableNo:'')+(cablePos?' '+cablePos:'');
- }else if(reTargetValue==='Other'){
- var otherPart=row.querySelector('.partCustom').value.trim();
- step=otherPart?'Reassemble '+otherPart:'';
- }else if(reTargetValue){
- var reDetail=row.querySelector('.partDetail').value.trim();
- step='Reassemble '+reTargetValue+(reDetail?' '+reDetail:'');
- }
- }else if(item.result==='replace_part'||item.result==='handoff_part'){
- var target=row.querySelector('.reTarget').value;
- var replaceSuffix=item.result==='replace_part'?' - '+(row.querySelector('.replaceResult').dataset.state==='pass'?'Pass':'Still Failed'):'';
- if(target==='Cable'){
- var cable=row.querySelector('.cableCustom').value.trim();
- var cableDetail=row.querySelector('.partDetail').value.trim();
- step=item.label+' cable'+(cable?' '+cable:'')+(cableDetail?' '+cableDetail:'')+replaceSuffix;
- }else if(target==='Other'){
- var part=row.querySelector('.partCustom').value.trim();
- step=part?item.label+' '+part+replaceSuffix:'';
- }else if(target){var detail=row.querySelector('.partDetail').value.trim();step=item.label+' '+target+(detail?' '+detail:'')+replaceSuffix;}
- }else step=item.label+(item.defaultText?' '+item.defaultText:'');
- }
- if(step){step=normalizeRepairText(step);steps.push(step);if(item && item.result==='replace_part')hasReplacement=true;if(step.indexOf('Reburn JTAG')===0)hasReburn=true;}
- }
- if(hasReplacement&&!hasReburn)steps.push('Reburn JTAG');
- if(!sn&&!error&&!steps.length&&!subbin&&!netName&&!rcCode&&!rcPartName)continue;
- var lines=[];
- if(sn)lines.push('SN: '+sn);
- if(station)lines.push('Station: '+station);
- if(error)lines.push('Error Code: '+error);
- lines.push('Status:\nSUB-BIN: '+subbin+(steps.length?'\n'+steps.map(function(x,i){return (i+1)+'. '+x;}).join('\n'):''));
- if(netName)lines.push('NET NAME: '+netName);
- if(rcCode)lines.push(rcCode+(rcCode==='RC48'&&rcPartName?' — '+rcPartName:''));
- blocks.push(lines.join('\n'));
+  var c=cards[i],sn=c.querySelector('.sn').value.trim();
+  var stationSel=c.querySelector('.station');
+  var station=stationSel.value==='__custom'?c.querySelector('.stationCustom').value.trim():stationSel.value;
+  var errorSel=c.querySelector('.errorSelect');
+  var error=errorSel.value==='__custom'?c.querySelector('.errorCustom').value.trim():(errorSel.value==='__swb_leakage'?'a2d_leakage_monitoring-monitor_swb_leak_AIN'+c.querySelector('.errorAin').value+'-FAIL-MEASUREMENT':(errorSel.value==='__monitoring_load'?'monitoring_with_load-monitoring_'+c.querySelector('.errorLoadType').value+'_with_load-FAIL-MEASUREMENT;':errorSel.value.trim()));
+  var subbin=c.querySelector('.subbinText').value.trim();
+  if(!subbin || /^(?:N\s*\/?\s*A|NOT\s*AVAILABLE|NONE)$/i.test(subbin.replace(/\s+/g,''))) subbin='N/A';
+  var rcCode=c.querySelector('.rcCode').value;
+  var rcPart=c.querySelector('.rcPart').value;
+  var rcPartCustom=c.querySelector('.rcPartCustom').value.trim();
+  var rcPartName=rcPartCustom || (rcPart==='Other'?'':rcPart);
+  var netName=c.querySelector('.netNameText').value.trim();
+  var stepRows=c.querySelectorAll('.stepRow'),steps=[],hasReplacement=false,hasReburn=false,hasCheckOut=false;
+  for(var z=0;z<stepRows.length;z++){var zsel=stepRows[z].querySelector('.stepSelect');if(zsel&&zsel.value&&zsel.value!=='custom'){var zids=zsel.value.split('_'),zitem=statusGroups[Number(zids[0])]&&statusGroups[Number(zids[0])].items[Number(zids[1])];if(zitem&&zitem.label==='Check out')hasCheckOut=true;}}
+  if(!hasCheckOut){rcCode='';rcPartName='';}
+  for(var j=0;j<stepRows.length;j++){
+   var row=stepRows[j],sel=row.querySelector('.stepSelect'),step='',item=null;
+   if(sel.value==='custom')step=row.querySelector('.stepCustom').value.trim();
+   else if(sel.value){
+    var ids=sel.value.split('_');item=statusGroups[Number(ids[0])].items[Number(ids[1])];
+    if(item.result==='custom_text'){var detail=row.querySelector('.stepCustom').value.trim();step=item.label+(detail?' - '+detail:'');}
+    else if(item.result==='ict_handoff'){var ict=row.querySelector('.ictTarget').value.trim();var debugOn=row.querySelector('.furtherDebug').dataset.state==='on';step='Need RE do '+ict+' ICT'+(debugOn?' or need further debug':'');}
+    else if(item.result===true)step=item.label+' '+(row.querySelector('.resultToggle').dataset.state==='pass'?'passed':'failed');
+    else if(item.result==='resistance_test'){
+     var testName=row.querySelector('.resistanceName').value.trim();
+     var testResult=row.querySelector('.resistanceToggle').value;
+     var ohms=row.querySelector('.resistanceOhms').value.trim();
+     step=(testName)?'Test '+testName+' resistance '+(testResult==='open'?'Open':(testResult==='ok'?'OK':'Fail'+(ohms?' ('+ohms+' Ω)':''))):'';
+    }else if(item.result==='check_test'){
+     var checkText=row.querySelector('.checkName').value.trim();
+     var checkState=row.querySelector('.checkResult').value;
+     step=checkText?'Check '+checkText+' '+(checkState==='missing'?'Missing':(checkState==='ok'?'OK':'Fail')):'';
+    }else if(item.result==='assemble_handoff'){
+     var assembleTarget=row.querySelector('.reTarget').value;
+     var assembleCustom=row.querySelector('.partCustom').value.trim();
+     var assemblePart=assembleCustom || assembleTarget;
+     step=assemblePart?'Need RE to assemble '+assemblePart:'';
+    }else if(item.result==='reassemble_part'){ 
+     var reTargetValue=row.querySelector('.reTarget').value;
+     if(reTargetValue==='Cable'){
+      var cableNo=row.querySelector('.cableCustom').value.trim();
+      var cablePos=row.querySelector('.partDetail').value.trim();
+      step='Reassemble cable'+(cableNo?' '+cableNo:'')+(cablePos?' '+cablePos:'');
+     }else if(reTargetValue==='Other'){
+      var otherPart=row.querySelector('.partCustom').value.trim();
+      step=otherPart?'Reassemble '+otherPart:'';
+     }else if(reTargetValue){
+      var reDetail=row.querySelector('.partDetail').value.trim();
+      step='Reassemble '+reTargetValue+(reDetail?' '+reDetail:'');
+     }
+    }else if(item.result==='replace_part'||item.result==='handoff_part'){
+     var target=row.querySelector('.reTarget').value;
+     var replaceSuffix=item.result==='replace_part'?' - '+(row.querySelector('.replaceResult').dataset.state==='pass'?'Pass':'Still Failed'):'';
+     if(target==='Cable'){
+      var cable=row.querySelector('.cableCustom').value.trim();
+      var cableDetail=row.querySelector('.partDetail').value.trim();
+      step=item.label+' cable'+(cable?' '+cable:'')+(cableDetail?' '+cableDetail:'')+replaceSuffix;
+     }else if(target==='Other'){
+      var part=row.querySelector('.partCustom').value.trim();
+      step=part?item.label+' '+part+replaceSuffix:'';
+     }else if(target){var detail=row.querySelector('.partDetail').value.trim();step=item.label+' '+target+(detail?' '+detail:'')+replaceSuffix;}
+    }else step=item.label+(item.defaultText?' '+item.defaultText:'');
+   }
+   if(step){step=normalizeRepairText(step);steps.push(step);if(item && item.result==='replace_part')hasReplacement=true;if(step.indexOf('Reburn JTAG')===0)hasReburn=true;}
+  }
+  if(hasReplacement&&!hasReburn)steps.push('Reburn JTAG');
+  if(!sn&&!error&&!steps.length&&!subbin&&!netName&&!rcCode&&!rcPartName)continue;
+  var lines=[];
+  if(sn)lines.push('SN: '+sn);
+  if(station)lines.push('Station: '+station);
+  if(error)lines.push('Error Code: '+error);
+  lines.push('Status:\nSUB-BIN: '+subbin+(steps.length?'\n'+steps.map(function(x,i){return (i+1)+'. '+x;}).join('\n'):''));
+  if(netName)lines.push('NET NAME: '+netName);
+  if(rcCode)lines.push(rcCode+(rcCode==='RC48'&&rcPartName?' — '+rcPartName:''));
+  blocks.push(lines.join('\n'));
  }
  document.getElementById('output').value=blocks.join('\n\n');
  document.getElementById('count').textContent=blocks.length+' 筆';
@@ -503,14 +502,14 @@ document.getElementById('copy').onclick=async function(){
  if(!out.value)return;
  var btn=document.getElementById('copy'),copied=false;
  try{
- if(navigator.clipboard && navigator.clipboard.writeText){
- await navigator.clipboard.writeText(out.value);
- copied=true;
- }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+   await navigator.clipboard.writeText(out.value);
+   copied=true;
+  }
  }catch(e){}
  if(!copied){
- out.focus();out.select();
- try{copied=document.execCommand('copy');}catch(e){}
+  out.focus();out.select();
+  try{copied=document.execCommand('copy');}catch(e){}
  }
  if(copied){btn.textContent='已複製純文字！';window.setTimeout(function(){btn.textContent='複製全部';},1500);}
  else{btn.textContent='請長按輸出框複製';}
@@ -523,27 +522,27 @@ document.getElementById('dailyReport').onclick=function(){
  var blocks=raw.split(/\n\s*\n+/).map(function(b){return b.trim();}).filter(Boolean);
  var formatted=[];
  blocks.forEach(function(block){
- var lines=block.split(/\r?\n/).filter(function(line){
- return !/^\s*(?:RC\s*:\s*)?RC(?:35|56|48)(?:\s*[—-].*)?\s*$/i.test(line);
- });
- // Keep only actual repair records. Date headings, notes, and other text are discarded.
- if(!lines.some(function(line){return /^\s*SN\s*:/i.test(line);})) return;
- // Remove an existing (n) heading wherever it appears at the start of the block.
- while(lines.length && /^\s*\(\d+\)\s*$/.test(lines[0])) lines.shift();
- if(!lines.length) return;
- lines[0]=lines[0].replace(/^\s*\(\d+\)\s*/, '');
- var statusIndex=lines.findIndex(function(line){return /^\s*Status\s*[:：]/i.test(line);});
- var subbinIndex=lines.findIndex(function(line){return /^\s*SUB\s*[-_ ]?\s*BIN\s*[:：]/i.test(line);});
- if(subbinIndex>=0){
- var existing=lines[subbinIndex].replace(/^\s*SUB\s*[-_ ]?\s*BIN\s*[:：]\s*/i,'');
- lines[subbinIndex]='SUB-BIN: '+normalizeSubBin(existing);
- }else if(statusIndex>=0){
- lines.splice(statusIndex+1,0,'SUB-BIN: N/A');
- }else{
- var firstStep=lines.findIndex(function(line){return /^\s*\d+\s*[.)]/.test(line);});
- lines.splice(firstStep>=0?firstStep:lines.length,0,'Status:','SUB-BIN: N/A');
- }
- formatted.push('('+(formatted.length+1)+')\n'+lines.join('\n'));
+  var lines=block.split(/\r?\n/).filter(function(line){
+   return !/^\s*(?:RC\s*:\s*)?RC(?:35|56|48)(?:\s*[—-].*)?\s*$/i.test(line);
+  });
+  // Keep only actual repair records. Date headings, notes, and other text are discarded.
+  if(!lines.some(function(line){return /^\s*SN\s*:/i.test(line);})) return;
+  // Remove an existing (n) heading wherever it appears at the start of the block.
+  while(lines.length && /^\s*\(\d+\)\s*$/.test(lines[0])) lines.shift();
+  if(!lines.length) return;
+  lines[0]=lines[0].replace(/^\s*\(\d+\)\s*/, '');
+  var statusIndex=lines.findIndex(function(line){return /^\s*Status\s*[:：]/i.test(line);});
+  var subbinIndex=lines.findIndex(function(line){return /^\s*SUB\s*[-_ ]?\s*BIN\s*[:：]/i.test(line);});
+  if(subbinIndex>=0){
+   var existing=lines[subbinIndex].replace(/^\s*SUB\s*[-_ ]?\s*BIN\s*[:：]\s*/i,'');
+   lines[subbinIndex]='SUB-BIN: '+normalizeSubBin(existing);
+  }else if(statusIndex>=0){
+   lines.splice(statusIndex+1,0,'SUB-BIN: N/A');
+  }else{
+   var firstStep=lines.findIndex(function(line){return /^\s*\d+\s*[.)]/.test(line);});
+   lines.splice(firstStep>=0?firstStep:lines.length,0,'Status:','SUB-BIN: N/A');
+  }
+  formatted.push('('+(formatted.length+1)+')\n'+lines.join('\n'));
  });
  out.value=formatted.join('\n\n');
  document.getElementById('count').textContent=formatted.length+' 筆一日報告';
@@ -561,92 +560,94 @@ document.getElementById('parseOutput').onclick=function(){
  var chunks=text.split(/\n\s*\n+/).map(function(x){return x.trim();}).filter(Boolean);
  records.innerHTML='';
  chunks.forEach(function(block){
- var c=addRecord(true);
- var lines=block.split(/\r?\n/), statusLines=[];
- var inStatus=false;
- c.querySelector('.subbinText').value='N/A';
- lines.forEach(function(line){
- // Repair steps may appear after SUB-BIN or other metadata fields.
- // Detect numbered steps independently of the Status header position.
- var stepMatch=line.match(/^\s*\d+\s*[.)]\s*(.*)$/);
- if(stepMatch && stepMatch[1].trim()){
- statusLines.push(stepMatch[1].trim());
- return;
- }
- var m=line.match(/^\s*(SN|Station|Error Code|NET\s*NAME|SUB\s*[-_ ]?\s*BIN)[:：]\s*(.*)$/i);
- if(m){
- inStatus=false;
- var key=m[1].toUpperCase().replace(/\s+/g,' ').replace(/[_ ]/g,'').replace('SUB-BIN','SUBBIN'),val=m[2].trim();
- if(key==='SUBBIN' && /^(?:N\s*\/?\s*A|NOT\s*AVAILABLE|NONE)$/i.test(val.replace(/\s+/g,''))) val='N/A';
- if(key==='SN') c.querySelector('.sn').value=val;
- else if(key==='STATION'){
- var sel=c.querySelector('.station');
- if(Array.from(sel.options).some(function(o){return o.value===val;})) sel.value=val;
- else {sel.value='__custom';c.querySelector('.stationCustom').style.display='block';c.querySelector('.stationCustom').value=val;}
- sel.dispatchEvent(new Event('change'));
- }else if(key==='ERROR CODE'){
- var es=c.querySelector('.errorSelect');
- var match=Array.from(es.options).find(function(o){return o.value===val;});
- if(match) es.value=val;
- else if(val==='monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;' || val==='monitoring_with_load-monitoring_osfp_with_load-FAIL-MEASUREMENT;'){
- es.value='__monitoring_load';c.querySelector('.errorLoadType').value=val.indexOf('_osfp_')>=0?'osfp':'vrs';
- }
- else {es.value='__custom';c.querySelector('.errorCustom').style.display='block';c.querySelector('.errorCustom').value=val;}
- es.dispatchEvent(new Event('change'));
- }else if(key==='NETNAME') c.querySelector('.netNameText').value=val;
- else if(key==='SUBBIN') c.querySelector('.subbinText').value=normalizeSubBin(val);
- else if(key==='RC'){
- var rcVal=val.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
- if(rcVal){c.querySelector('.rcCode').value=rcVal[1];if(rcVal[1]==='RC48'&&rcVal[2]){var ps=c.querySelector('.rcPart'),pt=rcVal[2].trim(),po=Array.from(ps.options).find(function(o){return o.value===pt;});if(po)ps.value=pt;else{ps.value='Other';c.querySelector('.rcPartCustom').value=pt;}ps.dispatchEvent(new Event('change'));}c.querySelector('.rcCode').dispatchEvent(new Event('change'));}
- }
- }else if(/^RC(?:35|56|48)(?:\s*[—-]\s*(.*))?$/.test(line.trim())){ 
- var rcMatch=line.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
- c.querySelector('.rcCode').value=rcMatch[1];
- if(rcMatch[1]==='RC48'&&rcMatch[2]){
- var partText=rcMatch[2].trim(),partSel=c.querySelector('.rcPart');
- var partOpt=Array.from(partSel.options).find(function(o){return o.value===partText;});
- if(partOpt)partSel.value=partText;
- else {partSel.value='Other';c.querySelector('.rcPartCustom').value=partText;}
- c.querySelector('.rcPart').dispatchEvent(new Event('change'));
- }
- c.querySelector('.rcCode').dispatchEvent(new Event('change'));
- inStatus=false;
- }
- else if(/^Status[:：]\s*$/i.test(line.trim())) inStatus=true;
- else if(inStatus && line.trim()) statusLines.push(line.replace(/^\s*\d+\.\s*/, '').trim());
- });
- statusLines.forEach(function(st,idx){
- var row=idx===0?c.querySelector('.stepRow'):null;
- if(!row){addStep(c);row=c.querySelectorAll('.stepRow')[c.querySelectorAll('.stepRow').length-1];}
- var sel=row.querySelector('.stepSelect'), low=st.toLowerCase(), matched=false;
- function choose(label){
- for(var gi=0;gi<statusGroups.length;gi++)for(var ii=0;ii<statusGroups[gi].items.length;ii++)if(statusGroups[gi].items[ii].label===label){sel.value=gi+'_'+ii;sel.dispatchEvent(new Event('change',{bubbles:true}));return true;}
- return false;
- }
- function setTarget(target){
- var rt=row.querySelector('.reTarget'), found=Array.from(rt.options).find(function(o){return o.value.toLowerCase()===target.toLowerCase();});
- if(found){rt.value=found.value;rt.dispatchEvent(new Event('change',{bubbles:true}));return true;}
- rt.value='Other';rt.dispatchEvent(new Event('change',{bubbles:true}));row.querySelector('.partCustom').value=target;return false;
- }
- var m;
- // Common pass/fail test actions.
- if((m=st.match(/^Check\s+(.+?)\s+(OK|Fail|Missing)(?:\s+.*)?$/i))){
- choose('Check');row.querySelector('.checkName').value=m[1].trim();row.querySelector('.checkResult').value=m[2].toLowerCase();matched=true;
- }else if((m=st.match(/^Test\s+(.+?)\s+resistance\s+(OK|Fail|Open)(?:\s*\((.*?)\s*Ω?\))?$/i))){
- choose('Test resistance');row.querySelector('.resistanceName').value=m[1].trim();row.querySelector('.resistanceResult').value=m[2].toLowerCase();if(m[2].toLowerCase()==='fail'&&m[3]){row.querySelector('.resistanceOhms').style.display='block';row.querySelector('.resistanceOhms').value=m[3].replace(/\s*Ω$/,'').trim();}matched=true;
- }else if((m=st.match(/^Need RE to assemble\s+(.+)$/i))){choose('Need RE to assemble');setTarget(m[1].trim());matched=true;
- }else if((m=st.match(/^Need RE to (change|rework)\s+(.+)$/i))){choose(m[1].toLowerCase()==='change'?'Need RE to change':'Need RE to rework');setTarget(m[2].trim());matched=true;
- }else if((m=st.match(/^Reassemble\s+(?:cable\s*)?(.+?)(?:\s+-\s*(?:pass|still failed))?$/i))){
- choose('Reassemble');var part=m[1].trim();if(/^cable/i.test(st)){setTarget('Cable');row.querySelector('.cableCustom').value=part.replace(/^cable\s*/i,'');row.querySelector('.cableCustom').style.display='block';}else setTarget(part);matched=true;
- }else if((m=st.match(/^Replace\s+(.+?)(?:\s+-\s*(Pass|Still Failed))?$/i))){
- choose('Replace');setTarget(m[1].trim());if(m[2]){var rb=row.querySelector('.replaceResult');rb.dataset.state=m[2].toLowerCase()==='pass'?'pass':'fail';rb.textContent=m[2];}matched=true;
- }else if((m=st.match(/^(Reburn JTAG|Retest DFT|ICT)\s+(?:still\s+)?(?:power on\s+)?(pass(?:ed)?|fail(?:ed)?)$/i))){choose(m[1]);var tog=row.querySelector('.resultToggle');var isPass=/^pass/i.test(m[2]);tog.dataset.state=isPass?'pass':'fail';tog.textContent=isPass?'Pass':'Fail';matched=true;
- }else if((m=st.match(/^Reassembly\s+(.+?)\s+(?:still\s+)?fail(?:ed)?$/i))){choose('Reassemble');setTarget(m[1].trim());matched=true;
- }else if(/^(NTF|Need further debug|Check out)$/i.test(st)){choose(st);matched=true;
- }else if((m=st.match(/^Need RE do\s+(.+?)\s+ICT(?:\s+or need further debug)?$/i))){choose('Need RE do ICT');row.querySelector('.ictTarget').value=m[1].trim();if(/or need further debug/i.test(st)){var fd=row.querySelector('.furtherDebug');fd.dataset.state='on';fd.textContent='Further debug: ON';}matched=true;
- }
- if(!matched){sel.value='custom';sel.dispatchEvent(new Event('change',{bubbles:true}));row.querySelector('.stepCustom').value=st;}
- });
+  var c=addRecord(true);
+  var lines=block.split(/\r?\n/), statusLines=[];
+  var inStatus=false;
+  c.querySelector('.subbinText').value='N/A';
+  lines.forEach(function(line){
+   // Repair steps may appear after SUB-BIN or other metadata fields.
+   // Detect numbered steps independently of the Status header position.
+   var stepMatch=line.match(/^\s*\d+\s*[.)]\s*(.*)$/);
+   if(stepMatch && stepMatch[1].trim()){
+    statusLines.push(stepMatch[1].trim());
+    return;
+   }
+   var m=line.match(/^\s*(SN|Station|Error Code|NET\s*NAME|SUB\s*[-_ ]?\s*BIN)[:：]\s*(.*)$/i);
+   if(m){
+    inStatus=false;
+    var key=m[1].toUpperCase().replace(/\s+/g,' ').replace(/[_ ]/g,'').replace('SUB-BIN','SUBBIN'),val=m[2].trim();
+    if(key==='SUBBIN' && /^(?:N\s*\/?\s*A|NOT\s*AVAILABLE|NONE)$/i.test(val.replace(/\s+/g,''))) val='N/A';
+    if(key==='SN') c.querySelector('.sn').value=val;
+    else if(key==='STATION'){
+     var sel=c.querySelector('.station');
+     var stationMap={'R_JTAG':'JTAG','R_FT':'FT','B30M':'LC245','B30':'LC245'};
+     val=stationMap[val]||val;
+     if(Array.from(sel.options).some(function(o){return o.value===val;})) sel.value=val;
+     else sel.value='JTAG';
+     sel.dispatchEvent(new Event('change'));
+    }else if(key==='ERROR CODE'){
+     var es=c.querySelector('.errorSelect');
+     var match=Array.from(es.options).find(function(o){return o.value===val;});
+     if(match) es.value=val;
+     else if(val==='monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;' || val==='monitoring_with_load-monitoring_osfp_with_load-FAIL-MEASUREMENT;'){
+      es.value='__monitoring_load';c.querySelector('.errorLoadType').value=val.indexOf('_osfp_')>=0?'osfp':'vrs';
+     }
+     else {es.value='__custom';c.querySelector('.errorCustom').style.display='block';c.querySelector('.errorCustom').value=val;}
+     es.dispatchEvent(new Event('change'));
+    }else if(key==='NETNAME') c.querySelector('.netNameText').value=val;
+    else if(key==='SUBBIN') c.querySelector('.subbinText').value=normalizeSubBin(val);
+    else if(key==='RC'){
+     var rcVal=val.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
+     if(rcVal){c.querySelector('.rcCode').value=rcVal[1];if(rcVal[1]==='RC48'&&rcVal[2]){var ps=c.querySelector('.rcPart'),pt=rcVal[2].trim(),po=Array.from(ps.options).find(function(o){return o.value===pt;});if(po)ps.value=pt;else{ps.value='Other';c.querySelector('.rcPartCustom').value=pt;}ps.dispatchEvent(new Event('change'));}c.querySelector('.rcCode').dispatchEvent(new Event('change'));}
+    }
+   }else if(/^RC(?:35|56|48)(?:\s*[—-]\s*(.*))?$/.test(line.trim())){ 
+    var rcMatch=line.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
+    c.querySelector('.rcCode').value=rcMatch[1];
+    if(rcMatch[1]==='RC48'&&rcMatch[2]){
+     var partText=rcMatch[2].trim(),partSel=c.querySelector('.rcPart');
+     var partOpt=Array.from(partSel.options).find(function(o){return o.value===partText;});
+     if(partOpt)partSel.value=partText;
+     else {partSel.value='Other';c.querySelector('.rcPartCustom').value=partText;}
+     c.querySelector('.rcPart').dispatchEvent(new Event('change'));
+    }
+    c.querySelector('.rcCode').dispatchEvent(new Event('change'));
+    inStatus=false;
+   }
+   else if(/^Status[:：]\s*$/i.test(line.trim())) inStatus=true;
+   else if(inStatus && line.trim()) statusLines.push(line.replace(/^\s*\d+\.\s*/, '').trim());
+  });
+  statusLines.forEach(function(st,idx){
+   var row=idx===0?c.querySelector('.stepRow'):null;
+   if(!row){addStep(c);row=c.querySelectorAll('.stepRow')[c.querySelectorAll('.stepRow').length-1];}
+   var sel=row.querySelector('.stepSelect'), low=st.toLowerCase(), matched=false;
+   function choose(label){
+    for(var gi=0;gi<statusGroups.length;gi++)for(var ii=0;ii<statusGroups[gi].items.length;ii++)if(statusGroups[gi].items[ii].label===label){sel.value=gi+'_'+ii;sel.dispatchEvent(new Event('change',{bubbles:true}));return true;}
+    return false;
+   }
+   function setTarget(target){
+    var rt=row.querySelector('.reTarget'), found=Array.from(rt.options).find(function(o){return o.value.toLowerCase()===target.toLowerCase();});
+    if(found){rt.value=found.value;rt.dispatchEvent(new Event('change',{bubbles:true}));return true;}
+    rt.value='Other';rt.dispatchEvent(new Event('change',{bubbles:true}));row.querySelector('.partCustom').value=target;return false;
+   }
+   var m;
+   // Common pass/fail test actions.
+   if((m=st.match(/^Check\s+(.+?)\s+(OK|Fail|Missing)(?:\s+.*)?$/i))){
+    choose('Check');row.querySelector('.checkName').value=m[1].trim();row.querySelector('.checkResult').value=m[2].toLowerCase();matched=true;
+   }else if((m=st.match(/^Test\s+(.+?)\s+resistance\s+(OK|Fail|Open)(?:\s*\((.*?)\s*Ω?\))?$/i))){
+    choose('Test resistance');row.querySelector('.resistanceName').value=m[1].trim();row.querySelector('.resistanceResult').value=m[2].toLowerCase();if(m[2].toLowerCase()==='fail'&&m[3]){row.querySelector('.resistanceOhms').style.display='block';row.querySelector('.resistanceOhms').value=m[3].replace(/\s*Ω$/,'').trim();}matched=true;
+   }else if((m=st.match(/^Need RE to assemble\s+(.+)$/i))){choose('Need RE to assemble');setTarget(m[1].trim());matched=true;
+   }else if((m=st.match(/^Need RE to (change|rework)\s+(.+)$/i))){choose(m[1].toLowerCase()==='change'?'Need RE to change':'Need RE to rework');setTarget(m[2].trim());matched=true;
+   }else if((m=st.match(/^Reassemble\s+(?:cable\s*)?(.+?)(?:\s+-\s*(?:pass|still failed))?$/i))){
+    choose('Reassemble');var part=m[1].trim();if(/^cable/i.test(st)){setTarget('Cable');row.querySelector('.cableCustom').value=part.replace(/^cable\s*/i,'');row.querySelector('.cableCustom').style.display='block';}else setTarget(part);matched=true;
+   }else if((m=st.match(/^Replace\s+(.+?)(?:\s+-\s*(Pass|Still Failed))?$/i))){
+    choose('Replace');setTarget(m[1].trim());if(m[2]){var rb=row.querySelector('.replaceResult');rb.dataset.state=m[2].toLowerCase()==='pass'?'pass':'fail';rb.textContent=m[2];}matched=true;
+   }else if((m=st.match(/^(Reburn JTAG|Retest DFT|ICT)\s+(?:still\s+)?(?:power on\s+)?(pass(?:ed)?|fail(?:ed)?)$/i))){choose(m[1]);var tog=row.querySelector('.resultToggle');var isPass=/^pass/i.test(m[2]);tog.dataset.state=isPass?'pass':'fail';tog.textContent=isPass?'Pass':'Fail';matched=true;
+   }else if((m=st.match(/^Reassembly\s+(.+?)\s+(?:still\s+)?fail(?:ed)?$/i))){choose('Reassemble');setTarget(m[1].trim());matched=true;
+   }else if(/^(NTF|Need further debug|Check out)$/i.test(st)){choose(st);matched=true;
+   }else if((m=st.match(/^Need RE do\s+(.+?)\s+ICT(?:\s+or need further debug)?$/i))){choose('Need RE do ICT');row.querySelector('.ictTarget').value=m[1].trim();if(/or need further debug/i.test(st)){var fd=row.querySelector('.furtherDebug');fd.dataset.state='on';fd.textContent='Further debug: ON';}matched=true;
+   }
+   if(!matched){sel.value='custom';sel.dispatchEvent(new Event('change',{bubbles:true}));row.querySelector('.stepCustom').value=st;}
+  });
  });
  renumber();
  document.getElementById('count').textContent=chunks.length+' 筆已回填';
@@ -655,4 +656,5 @@ document.getElementById('parseOutput').onclick=function(){
 addRecord();
 
 </script>
+<footer style="text-align:center;color:#8a929d;font-size:11px;padding:18px 0 8px">Salamandra SN Report Generator · V72 · Created by Alex Sun</footer>
 </body></html>
