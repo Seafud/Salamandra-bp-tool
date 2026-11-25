@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Salamandra SN Report Generator V72</title>
+<title>Salamandra SN Report Generator V75</title>
 <style>
-:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#202124;background:#f4f6f8}
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#202124;background:#f4f6f8;--ui-scale:1}
 *{box-sizing:border-box}body{margin:0;padding:16px}.wrap{max-width:900px;margin:auto}
 h1{font-size:23px;margin:4px 0 6px}.hint{color:#606770;font-size:14px;margin:0 0 16px}
 .card{background:white;border:1px solid #dfe3e8;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 2px 8px #00000008}
@@ -52,10 +52,30 @@ button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650
 .qrClose{background:#e8eaed;color:#202124}
 .qrStatus{margin-top:10px!important;min-height:20px}
 @media(max-width:420px){.scanQrBtn{padding:0 10px;font-size:13px}}
+
+/* V75 appearance controls */
+body{font-size:calc(16px * var(--ui-scale))}
+label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(12px * var(--ui-scale))}.errorDetail{font-size:calc(12px * var(--ui-scale))!important}
+#appearanceBar{display:flex;justify-content:flex-end;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 12px}
+#appearanceBar button,#appearanceBar select{width:auto;min-height:36px;padding:6px 10px;font-size:13px;border-radius:8px}
+#appearanceBar .appearanceLabel{font-size:12px;color:#64748b}
+:root.dark{color:#e5e7eb;background:#111827}
+:root.dark body{color:#e5e7eb;background:#111827}
+:root.dark .card{background:#1f2937;border-color:#374151;box-shadow:none}
+:root.dark input,:root.dark select,:root.dark textarea{background:#111827;color:#e5e7eb;border-color:#4b5563}
+:root.dark label,:root.dark .hint,:root.dark .small,:root.dark .sectionHelp{color:#cbd5e1}
+:root.dark .secondary{background:#374151;color:#e5e7eb}
+:root.dark .danger{background:#512b32;color:#fecaca}
+:root.dark .stepNo{color:#cbd5e1}
+:root.dark .moveStep{background:#374151!important;color:#e5e7eb!important;border-color:#4b5563!important}
+:root.dark .resultToggle{background:#164e35;color:#bbf7d0}
+:root.dark .resultToggle.fail{background:#5b2525;color:#fecaca}
+:root.dark footer{color:#9ca3af!important}
 </style>
 </head>
 <body>
 <div class="wrap">
+<div id="appearanceBar"><span class="appearanceLabel">外觀</span><button type="button" id="themeToggle" class="secondary">🌙 深色</button><span class="appearanceLabel">字體</span><button type="button" id="fontDown" class="secondary">A−</button><button type="button" id="fontUp" class="secondary">A＋</button><button type="button" id="fontReset" class="secondary">重設</button></div>
 <h1>Salamandra SN Report Generator</h1>
 <p class="hint">Salamandra 維修紀錄：輸入 SN、Station、Error Code、Status 及 SUB-BIN，再產生可直接貼到聊天群的報告。</p>
 <div id="records"></div>
@@ -154,6 +174,8 @@ button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650
 </optgroup>
 <optgroup label="Monitoring">
 <option value="__monitoring_load">Monitoring with Load</option>
+<option value="monitoring_with_load-monitoring_osfp_with_load-FAIL-MEASUREMENT;">OSFP Monitoring with Load</option>
+<option value="osfp_load_enable-osfp_load_enable-ERROR-Value-Error">OSFP Load Enable Value Error</option>
 <option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT">ASIC Delta Temp</option>
 </optgroup>
 <optgroup label="Interrupt">
@@ -269,6 +291,9 @@ function addStep(card, presetValue){
  var cableInput=document.createElement('input');cableInput.className='cableCustom';cableInput.placeholder='Cable 編號（可留空）…';cableInput.style.display='none';
  var partCustom=document.createElement('input');partCustom.className='partCustom';partCustom.placeholder='輸入零件名稱…';partCustom.style.display='none';
  var partDetail=document.createElement('input');partDetail.className='partDetail';partDetail.placeholder='補充位置／編號（可留空）…';partDetail.style.display='none';
+ var reburnWrap=document.createElement('label');reburnWrap.className='reburnJtagOption';reburnWrap.style.display='none';reburnWrap.style.alignItems='center';reburnWrap.style.gap='5px';reburnWrap.style.whiteSpace='nowrap';reburnWrap.style.fontSize='12px';
+ var reburnCheckbox=document.createElement('input');reburnCheckbox.type='checkbox';reburnCheckbox.className='reburnJtagCheckbox';reburnCheckbox.style.width='auto';reburnCheckbox.style.flex='0 0 auto';
+ var reburnText=document.createElement('span');reburnText.textContent='and reburn JTAG';reburnWrap.appendChild(reburnCheckbox);reburnWrap.appendChild(reburnText);
  var replaceResult=document.createElement('button');replaceResult.type='button';replaceResult.className='resultToggle replaceResult';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.style.display='none';
  var resistanceName=document.createElement('input');resistanceName.className='resistanceName';resistanceName.placeholder='測試項目，例如 J16…';resistanceName.style.display='none';resistanceName.style.flex='1 1 150px';resistanceName.style.width='auto';
  var resistanceResult=document.createElement('select');resistanceResult.className='resistanceToggle resistanceResult';resistanceResult.style.display='none';resistanceResult.style.flex='0 0 82px';
@@ -283,7 +308,7 @@ function addStep(card, presetValue){
  remove.onclick=function(){row.parentNode.removeChild(row);renumberSteps(card);updateRCVisibility(card);};
  action.onchange=function(){
   updateRCVisibility(card);
-  custom.style.display='none';result.style.display='none';reTarget.style.display='none';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';replaceResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
+  custom.style.display='none';result.style.display='none';reTarget.style.display='none';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';reburnWrap.style.display='none';reburnCheckbox.checked=false;replaceResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
   row.classList.remove('resistanceMode','checkMode');
   if(action.value==='custom'){custom.style.display='block';return;}
   if(!action.value)return;
@@ -305,12 +330,17 @@ function addStep(card, presetValue){
   cableInput.style.display=reTarget.value==='Cable'?'block':'none';
   partCustom.style.display=(reTarget.value==='Other'||(chosen&&chosen.result==='assemble_handoff'))?'block':'none';
   partDetail.style.display=(reTarget.value && reTarget.value!=='Other')?'block':'none';
+  if(chosen&&chosen.label==='Need RE to change'){
+   reburnWrap.style.display='inline-flex';
+   var boardParts=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','I/O board'];
+   reburnCheckbox.checked=boardParts.indexOf(reTarget.value)>=0;
+  }else{reburnWrap.style.display='none';reburnCheckbox.checked=false;}
  };
  result.onclick=function(){result.dataset.state=result.dataset.state==='pass'?'fail':'pass';result.textContent=result.dataset.state==='pass'?'Pass':'Fail';result.className='resultToggle '+result.dataset.state;};
  
  furtherDebug.onclick=function(){furtherDebug.dataset.state=furtherDebug.dataset.state==='on'?'off':'on';furtherDebug.textContent='Further debug: '+(furtherDebug.dataset.state==='on'?'ON':'OFF');furtherDebug.className='resultToggle furtherDebug '+furtherDebug.dataset.state;};
  replaceResult.onclick=function(){replaceResult.dataset.state=replaceResult.dataset.state==='pass'?'still_failed':'pass';replaceResult.textContent=replaceResult.dataset.state==='pass'?'Pass':'Still Failed';replaceResult.className='resultToggle replaceResult '+(replaceResult.dataset.state==='pass'?'pass':'fail');};
- row.appendChild(no);row.appendChild(moveControls);row.appendChild(action);row.appendChild(result);row.appendChild(custom);row.appendChild(reTarget);row.appendChild(cableInput);row.appendChild(partCustom);row.appendChild(partDetail);row.appendChild(replaceResult);row.appendChild(resistanceName);row.appendChild(resistanceResult);row.appendChild(resistanceOhms);row.appendChild(checkName);row.appendChild(checkResult);row.appendChild(ictTarget);row.appendChild(furtherDebug);row.appendChild(remove);
+ row.appendChild(no);row.appendChild(moveControls);row.appendChild(action);row.appendChild(result);row.appendChild(custom);row.appendChild(reTarget);row.appendChild(cableInput);row.appendChild(partCustom);row.appendChild(partDetail);row.appendChild(reburnWrap);row.appendChild(replaceResult);row.appendChild(resistanceName);row.appendChild(resistanceResult);row.appendChild(resistanceOhms);row.appendChild(checkName);row.appendChild(checkResult);row.appendChild(ictTarget);row.appendChild(furtherDebug);row.appendChild(remove);
  card.querySelector('.statusSteps').appendChild(row);renumberSteps(card);if(presetValue){action.value=presetValue;action.dispatchEvent(new Event('change',{bubbles:true}));}
 }
 function flashMoved(row){row.classList.remove('justMoved');void row.offsetWidth;row.classList.add('justMoved');setTimeout(function(){row.classList.remove('justMoved');},500);}
@@ -472,11 +502,11 @@ function makeReport(){
      if(target==='Cable'){
       var cable=row.querySelector('.cableCustom').value.trim();
       var cableDetail=row.querySelector('.partDetail').value.trim();
-      step=item.label+' cable'+(cable?' '+cable:'')+(cableDetail?' '+cableDetail:'')+replaceSuffix;
+      step=item.label+' cable'+(cable?' '+cable:'')+(cableDetail?' '+cableDetail:'')+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':'');
      }else if(target==='Other'){
       var part=row.querySelector('.partCustom').value.trim();
-      step=part?item.label+' '+part+replaceSuffix:'';
-     }else if(target){var detail=row.querySelector('.partDetail').value.trim();step=item.label+' '+target+(detail?' '+detail:'')+replaceSuffix;}
+      step=part?item.label+' '+part+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':''):'';
+     }else if(target){var detail=row.querySelector('.partDetail').value.trim();step=item.label+' '+target+(detail?' '+detail:'')+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':'');}
     }else step=item.label+(item.defaultText?' '+item.defaultText:'');
    }
    if(step){step=normalizeRepairText(step);steps.push(step);if(item && item.result==='replace_part')hasReplacement=true;if(step.indexOf('Reburn JTAG')===0)hasReburn=true;}
@@ -636,7 +666,7 @@ document.getElementById('parseOutput').onclick=function(){
    }else if((m=st.match(/^Test\s+(.+?)\s+resistance\s+(OK|Fail|Open)(?:\s*\((.*?)\s*Ω?\))?$/i))){
     choose('Test resistance');row.querySelector('.resistanceName').value=m[1].trim();row.querySelector('.resistanceResult').value=m[2].toLowerCase();if(m[2].toLowerCase()==='fail'&&m[3]){row.querySelector('.resistanceOhms').style.display='block';row.querySelector('.resistanceOhms').value=m[3].replace(/\s*Ω$/,'').trim();}matched=true;
    }else if((m=st.match(/^Need RE to assemble\s+(.+)$/i))){choose('Need RE to assemble');setTarget(m[1].trim());matched=true;
-   }else if((m=st.match(/^Need RE to (change|rework)\s+(.+)$/i))){choose(m[1].toLowerCase()==='change'?'Need RE to change':'Need RE to rework');setTarget(m[2].trim());matched=true;
+   }else if((m=st.match(/^Need RE to (change|rework)\s+(.+?)(?:\s+and\s+reburn\s+JTAG)?$/i))){choose(m[1].toLowerCase()==='change'?'Need RE to change':'Need RE to rework');setTarget(m[2].trim());if(m[1].toLowerCase()==='change'){var rbj=row.querySelector('.reburnJtagCheckbox');rbj.checked=/\s+and\s+reburn\s+JTAG$/i.test(st);row.querySelector('.reburnJtagOption').style.display='inline-flex';}matched=true;
    }else if((m=st.match(/^Reassemble\s+(?:cable\s*)?(.+?)(?:\s+-\s*(?:pass|still failed))?$/i))){
     choose('Reassemble');var part=m[1].trim();if(/^cable/i.test(st)){setTarget('Cable');row.querySelector('.cableCustom').value=part.replace(/^cable\s*/i,'');row.querySelector('.cableCustom').style.display='block';}else setTarget(part);matched=true;
    }else if((m=st.match(/^Replace\s+(.+?)(?:\s+-\s*(Pass|Still Failed))?$/i))){
@@ -656,5 +686,22 @@ document.getElementById('parseOutput').onclick=function(){
 addRecord();
 
 </script>
-<footer style="text-align:center;color:#8a929d;font-size:11px;padding:18px 0 8px">Salamandra SN Report Generator · V72 · Created by Alex Sun</footer>
+<footer style="text-align:center;color:#8a929d;font-size:11px;padding:18px 0 8px">Salamandra SN Report Generator · V75 · Created by Alex Sun</footer>
+<script>
+(function(){
+ const root=document.documentElement;
+ let theme=localStorage.getItem('salamandra-theme')||'light';
+ let scale=parseFloat(localStorage.getItem('salamandra-font-scale')||'1');
+ function apply(){root.classList.toggle('dark',theme==='dark');root.style.setProperty('--ui-scale',String(scale));
+  const b=document.getElementById('themeToggle');if(b)b.textContent=theme==='dark'?'☀️ 淺色':'🌙 深色';}
+ document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('themeToggle').addEventListener('click',function(){theme=theme==='dark'?'light':'dark';localStorage.setItem('salamandra-theme',theme);apply();});
+  document.getElementById('fontDown').addEventListener('click',function(){scale=Math.max(.85,Math.round((scale-.1)*100)/100);localStorage.setItem('salamandra-font-scale',scale);apply();});
+  document.getElementById('fontUp').addEventListener('click',function(){scale=Math.min(1.5,Math.round((scale+.1)*100)/100);localStorage.setItem('salamandra-font-scale',scale);apply();});
+  document.getElementById('fontReset').addEventListener('click',function(){scale=1;localStorage.setItem('salamandra-font-scale',scale);apply();});
+  apply();
+ });
+ apply();
+})();
+</script>
 </body></html>
