@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Salamandra SN Report Generator V81</title>
+<title>Salamandra SN Report Generator V88</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#202124;background:#f4f6f8;--ui-scale:1}
 *{box-sizing:border-box}body{margin:0;padding:16px}.wrap{max-width:900px;margin:auto}
@@ -87,6 +87,16 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 :root.dark .changelog summary{border-color:#4b5563;color:#cbd5e1}
 :root.dark .changelogPanel{background:#111827;border-color:#374151;color:#cbd5e1}
 :root.dark .changelogPanel strong{color:#f3f4f6}
+
+/* V88: consistent, visible dropdown indicator on every select (mobile + desktop) */
+select{appearance:none!important;-webkit-appearance:none!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235b6472' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important;background-size:16px 16px!important;padding-right:36px!important}
+:root.dark select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important}
+select:focus{outline:2px solid #3985df;outline-offset:1px}
+.autoSaveNote{font-size:12px;color:#64748b;align-self:center}
+:root.dark .autoSaveNote{color:#cbd5e1}
+.validationBox{border:1px solid #e0a33a;background:#fff8e8;color:#7a4b00;border-radius:9px;padding:10px 12px;margin:10px 0;line-height:1.5}
+:root.dark .validationBox{background:#3b2f1b;border-color:#9a6b22;color:#ffe0a3}
+
 </style>
 </head>
 <body>
@@ -191,7 +201,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <option value="power_on-config_static_ip-ERROR-Exception;">Static IP Exception</option>
 </optgroup>
 <optgroup label="Monitoring">
-<option value="__monitoring_load">Monitoring with Load</option>
+<option value="__monitoring_load">Monitoring with Load（下方選 VRS / OSFP）</option>
 <option value="monitoring_with_load-monitoring_osfp_with_load-FAIL-MEASUREMENT;">OSFP Monitoring with Load</option>
 <option value="osfp_load_enable-osfp_load_enable-ERROR-Value-Error">OSFP Load Enable Value Error</option>
 <option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT">ASIC Delta Temp</option>
@@ -202,7 +212,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <optgroup label="USB / Storage">
 <option value="sbc_storage_usb-passmark-FAIL-MEASUREMENT">USB PassMark Fail</option>
 </optgroup>
-\n<optgroup label="FT - Top Error Codes">\n<option value="stress-run_stress_1-ERROR-Exception;">Stress Run Exception</option>\n<option value="linkup-ib_link_stress_1-FAIL-MEASUREMENT;">IB Link Stress Fail</option>\n<option value="stress-run_stress_1-FAIL-MEASUREMENT;">Stress Run Fail</option>\n<option value="osfp_load_enable-osfp_load_enable-ERROR-ValueError;">OSFP Load Enable ValueError</option>\n<option value="osfp-normalize_osfp_temperatures-FAIL-MEASUREMENT;">OSFP Normalize Temperature Fail</option>\n<option value="power_on_with_fw-verify_asic_fw_state-FAIL-MEASUREMENT;">Verify ASIC FW State Fail</option>\n<option value="ic_a2d_group-mvcr_test-ERROR-ValueError;">IC A2D MVCR ValueError</option>\n<option value="monitoring_under_stress-read_voltage_and_current_values-FAIL-MEASUREMENT;">Read Voltage / Current Fail</option>\n<option value="power_on-update_pcie_dev-ERROR-ValueError;">Update PCIe Device ValueError</option>\n<option value="physical_security_asics-fmon_vmon_scp_p0-FAIL-MEASUREMENT;">Physical Security ASIC Fail</option>\n<option value="monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;">VRS Monitoring with Load</option>\n<option value="monitoring_under_stress-calculate_planarity_deltas-FAIL-MEASUREMENT;">Calculate Planarity Deltas Fail</option>\n<option value="osfp_load_enable-osfp_load_enable-ERROR-MTCError;">OSFP Load Enable MTCError</option>\n<option value="monitoring_vis_without_load-monitoring_without_load-FAIL-MEASUREMENT;">VIS Monitoring without Load</option>\n<option value="monitoring_comex_cpu-read_voltage_current-FAIL-MEASUREMENT;">COMEX CPU Read Voltage / Current Fail</option>\n<option value="linkup-ib_link_stress_1-ERROR-TimeoutError;">IB Link Stress Timeout</option>\n<option value="osfp-calculate_osfp_power_and_theta-FAIL-MEASUREMENT;">OSFP Power / Theta Fail</option>\n<option value="latch_array_bist_asics-verify_asic_fw_state-FAIL-MEASUREMENT;">Latch Array BIST ASIC FW Verify Fail</option>\n<option value="linkup-ib_link_stress_1-ERROR-Exception;">IB Link Stress Exception</option>\n<option value="osfp-attributes-FAIL-MEASUREMENT;">OSFP Attributes Fail</option>\n<option value="ic_a2d_group-mvcr_test-FAIL-MEASUREMENT;">IC A2D MVCR Fail</option>\n<option value="lbist_asics-lbist-FAIL-MEASUREMENT;">LBIST ASIC Fail</option>\n<option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT;">ASIC Delta Temp</option>\n</optgroup>\n</select>
+\n<optgroup label="Stress / IB Link">\n<option value="stress-run_stress_1-ERROR-Exception;">Stress Run Exception</option>\n<option value="linkup-ib_link_stress_1-FAIL-MEASUREMENT;">IB Link Stress Fail</option>\n<option value="stress-run_stress_1-FAIL-MEASUREMENT;">Stress Run Fail</option>\n<option value="linkup-ib_link_stress_1-ERROR-TimeoutError;">IB Link Stress Timeout</option>\n<option value="linkup-ib_link_stress_1-ERROR-Exception;">IB Link Stress Exception</option>\n</optgroup>\n\n<optgroup label="OSFP">\n<option value="osfp_load_enable-osfp_load_enable-ERROR-ValueError;">OSFP Load Enable ValueError</option>\n<option value="osfp-normalize_osfp_temperatures-FAIL-MEASUREMENT;">OSFP Normalize Temperature Fail</option>\n<option value="osfp_load_enable-osfp_load_enable-ERROR-MTCError;">OSFP Load Enable MTCError</option>\n<option value="osfp-calculate_osfp_power_and_theta-FAIL-MEASUREMENT;">OSFP Power / Theta Fail</option>\n<option value="osfp-attributes-FAIL-MEASUREMENT;">OSFP Attributes Fail</option>\n</optgroup>\n\n<optgroup label="Monitoring">\n<option value="monitoring_under_stress-read_voltage_and_current_values-FAIL-MEASUREMENT;">Read Voltage / Current Fail</option>\n<option value="monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;">VRS Monitoring with Load</option>\n<option value="monitoring_under_stress-calculate_planarity_deltas-FAIL-MEASUREMENT;">Calculate Planarity Deltas Fail</option>\n<option value="monitoring_vis_without_load-monitoring_without_load-FAIL-MEASUREMENT;">VIS Monitoring without Load</option>\n<option value="monitoring_comex_cpu-read_voltage_current-FAIL-MEASUREMENT;">COMEX CPU Read Voltage / Current Fail</option>\n<option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT;">ASIC Delta Temp</option>\n</optgroup>\n\n<optgroup label="ASIC / BIST">\n<option value="power_on_with_fw-verify_asic_fw_state-FAIL-MEASUREMENT;">Verify ASIC FW State Fail</option>\n<option value="ic_a2d_group-mvcr_test-ERROR-ValueError;">IC A2D MVCR ValueError</option>\n<option value="latch_array_bist_asics-verify_asic_fw_state-FAIL-MEASUREMENT;">Latch Array BIST ASIC FW Verify Fail</option>\n<option value="ic_a2d_group-mvcr_test-FAIL-MEASUREMENT;">IC A2D MVCR Fail</option>\n<option value="lbist_asics-lbist-FAIL-MEASUREMENT;">LBIST ASIC Fail</option>\n</optgroup>\n\n<optgroup label="Physical Security">\n<option value="physical_security_asics-fmon_vmon_scp_p0-FAIL-MEASUREMENT;">Physical Security ASIC Fail</option>\n</optgroup>\n\n<optgroup label="Other FT">\n<option value="power_on-update_pcie_dev-ERROR-ValueError;">Update PCIe Device ValueError</option>\n</optgroup>\n</select>
 <select class="errorLoadType" style="display:none;margin-top:7px"><option value="vrs">VRS</option><option value="osfp">OSFP</option></select>
 <select class="errorAin" style="display:none;margin-top:7px"><option value="0">AIN0</option><option value="1">AIN1</option><option value="2">AIN2</option><option value="3">AIN3</option></select>
 <input class="errorCustom" placeholder="輸入自訂 Error Code" style="display:none;margin-top:7px">
@@ -614,7 +624,7 @@ function makeReport(){
  document.getElementById('count').textContent=blocks.length+' 筆';
 }
 document.getElementById('add').onclick=addRecord;
-document.getElementById('generate').onclick=function(){try{makeReport();}catch(e){var out=document.getElementById('output');out.value='產生失敗：'+(e&&e.message?e.message:String(e));document.getElementById('count').textContent='請回報此錯誤';}};
+document.getElementById('generate').onclick=function(){try{var problems=validateRecords();if(problems.length){alert('產生前檢查發現以下欄位需要確認：\n\n'+problems.slice(0,18).join('\n')+(problems.length>18?'\n…另有 '+(problems.length-18)+' 項':'')+'\n\n請修正後再產生報告。');return;}makeReport();saveDraftNow();}catch(e){var out=document.getElementById('output');out.value='產生失敗：'+(e&&e.message?e.message:String(e));document.getElementById('count').textContent='請回報此錯誤';}};
 document.getElementById('copy').onclick=async function(){
  var out=document.getElementById('output');
  if(!out.value)return;
@@ -667,6 +677,7 @@ document.getElementById('dailyReport').onclick=function(){
 };
 
 document.getElementById('clear').onclick=function(){
+ try{localStorage.removeItem('salamandra-v88-draft');}catch(e){}
  var out=document.getElementById('output');
  out.value='';
  document.getElementById('count').textContent='';
@@ -771,15 +782,68 @@ document.getElementById('parseOutput').onclick=function(){
  document.getElementById('count').textContent=chunks.length+' 筆已回填';
 };
 
+
+// V88 pre-generation validation: only validate records that contain any user data.
+function validateRecords(){
+ var issues=[];var cards=records.querySelectorAll('.record');
+ cards.forEach(function(c,i){
+  var sn=c.querySelector('.sn').value.trim(),station=c.querySelector('.station').value,errorSel=c.querySelector('.errorSelect'),error=errorSel.value==='__custom'?c.querySelector('.errorCustom').value.trim():errorSel.value;
+  var rows=c.querySelectorAll('.stepRow');
+  var hasAny=!!(sn||c.querySelector('.stationCustom').value.trim()||station!=='JTAG'||error||c.querySelector('.netNameText').value.trim()||c.querySelector('.subbinText').value.trim()||Array.from(rows).some(function(r){return r.querySelector('.stepSelect').value;}));
+  if(!hasAny)return;
+  var n=i+1;
+  if(!sn)issues.push('資料 '+n+'：缺少 SN');
+  if(!station)issues.push('資料 '+n+'：缺少 Station');
+  if(!error)issues.push('資料 '+n+'：缺少 Error Code');
+  var filled=Array.from(rows).filter(function(r){return !!r.querySelector('.stepSelect').value;});
+  if(!filled.length)issues.push('資料 '+n+'：至少新增一個 Status');
+  filled.forEach(function(r){
+   var v=r.querySelector('.stepSelect').value;if(v==='custom'){if(!r.querySelector('.stepCustom').value.trim())issues.push('資料 '+n+'：自訂 Status 尚未填寫');return;}
+   var p=v.split('_'),it=statusGroups[+p[0]]&&statusGroups[+p[0]].items[+p[1]];if(!it)return;
+   if(['replace_part','reassemble_part','handoff_part','assemble_handoff'].indexOf(it.result)>=0){
+    var target=r.querySelector('.reTarget').value;
+    if(!target)issues.push('資料 '+n+'：'+it.label+' 尚未選擇零件');
+    else if(target==='Other'&&!r.querySelector('.partCustom').value.trim())issues.push('資料 '+n+'：'+it.label+' 的自訂零件名稱未填');
+    else if(target==='Harness'&&!r.querySelector('.harnessVariant').value)issues.push('資料 '+n+'：Harness 尚未選擇型號');
+   }
+   if(it.result==='check_test'&&!r.querySelector('.checkPart').value)issues.push('資料 '+n+'：Check 尚未選擇零件');
+   if(it.result==='resistance_test'&&!r.querySelector('.resistanceName').value.trim())issues.push('資料 '+n+'：Test resistance 尚未填測試項目');
+   if(it.result==='ict_handoff'&&!r.querySelector('.ictTarget').value.trim())issues.push('資料 '+n+'：Need RE do ICT 尚未填寫對象');
+  });
+ });
+ return issues;
+}
+var draftTimer=null,restoringDraft=false;
+function saveDraftNow(){
+ if(restoringDraft)return;
+ var out=document.getElementById('output'),count=document.getElementById('count'),oldOut=out.value,oldCount=count.textContent;
+ try{makeReport();var snapshot=out.value;if(snapshot.trim())localStorage.setItem('salamandra-v88-draft',snapshot);else localStorage.removeItem('salamandra-v88-draft');}
+ catch(e){}finally{out.value=oldOut;count.textContent=oldCount;}
+ updateDraftButton();
+}
+function scheduleDraftSave(){if(restoringDraft)return;clearTimeout(draftTimer);draftTimer=setTimeout(saveDraftNow,450);}
+function updateDraftButton(){var b=document.getElementById('restoreDraft');if(b)b.style.display=localStorage.getItem('salamandra-v88-draft')?'inline-block':'none';}
+(function setupDraft(){
+ var actions=document.querySelector('.actions');
+ var restore=document.createElement('button');restore.type='button';restore.id='restoreDraft';restore.className='secondary';restore.textContent='恢復自動暫存';restore.style.display='none';
+ var note=document.createElement('span');note.className='autoSaveNote';note.textContent='輸入內容會自動暫存於此裝置';
+ actions.appendChild(restore);actions.appendChild(note);
+ restore.onclick=function(){var snapshot=localStorage.getItem('salamandra-v88-draft');if(!snapshot)return;if(!confirm('要恢復上次自動暫存的維修紀錄嗎？目前畫面中的資料會被取代。'))return;restoringDraft=true;var out=document.getElementById('output');out.value=snapshot;document.getElementById('parseOutput').click();out.value='';document.getElementById('count').textContent='已恢復暫存';restoringDraft=false;restore.style.display='none';};
+ records.addEventListener('input',scheduleDraftSave);records.addEventListener('change',scheduleDraftSave);
+ window.addEventListener('beforeunload',saveDraftNow);
+ updateDraftButton();
+})();
+
 addRecord();
 
 </script>
 <footer style="text-align:center;color:#8a929d;font-size:11px;padding:18px 0 8px">
  <div class="versionInfo">
-  <span>Salamandra SN Report Generator · V87 · Created by Alex Sun</span>
+  <span>Salamandra SN Report Generator · V88 · Created by Alex Sun</span>
   <details class="changelog">
    <summary>改版資訊</summary>
    <div class="changelogPanel">
+     <strong>V88</strong><br>手機介面整理：所有下拉選單加明顯箭頭、FT Error Code 依 Stress／IB Link、OSFP、Monitoring、ASIC／BIST、Power／PCIe、Physical Security 分組；新增產生前欄位檢查與本機自動暫存／恢復。<br>
      <strong>V87</strong><br>修正 TOP 32 中數字開頭的 CVF Error Code 分類：180、188 移至 JTAG / CVF 選單，不再出現在 FT；數字開頭的 CVF 項目統一歸類 JTAG。<br>
      <strong>V86</strong><br>依據最新 Error Code TOP 32 統計，新增尚未收錄的 FT Error Code，涵蓋 Stress、IB Link、OSFP、ASIC、PCIe、Monitoring、Physical Security、LBIST 等項目；保留原始 Error Code 字串供報告輸出。<br>
      <strong>V85</strong><br>修正切換維修動作後 Harness 型號選單／補充欄位未重新顯示；移除會強制隱藏 Harness 型號選單的手機版樣式；修正 Need RE to assemble 讀取 Harness 型號時的欄位作用域。<br>
