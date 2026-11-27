@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Salamandra SN Report Generator V79</title>
+<title>Salamandra SN Report Generator V89</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#202124;background:#f4f6f8;--ui-scale:1}
 *{box-sizing:border-box}body{margin:0;padding:16px}.wrap{max-width:900px;margin:auto}
@@ -22,7 +22,10 @@ button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650
 
 .stepRow{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:7px 0}
 .stepNo{font-weight:700;color:#596273;text-align:center;min-width:25px}.moveControls{flex:0 0 34px;width:34px;display:flex;flex-direction:column;gap:3px;align-items:stretch}.moveStep{width:34px;min-width:34px;min-height:27px;padding:2px 3px!important;background:#eef2f7!important;color:#334155!important;border:1px solid #d8dee8!important;border-radius:7px;font-size:14px;line-height:1}.moveStep:disabled{opacity:.3;cursor:not-allowed}.stepRow{border:1px solid transparent;border-radius:11px;padding:4px;transition:background .18s,border-color .18s}.sectionHelp{font-size:12px;color:#64748b;margin:4px 0 10px}quickTip{background:#f1f6ff;border:1px solid #d7e6ff;border-radius:9px;padding:9px 11px;color:#31547d;font-size:12px;margin:8px 0 12px}.stepRow.justMoved{animation:moveFlash .45s ease-out}@keyframes moveFlash{0%{background:#dbeafe;border-color:#1769d2}100%{background:transparent;border-color:transparent}}
-.stepRow select.stepSelect{flex:1 1 190px;min-width:0;width:auto}.stepRow input{flex:1 1 100%;min-width:0;width:100%;position:relative;z-index:1;pointer-events:auto}.stepRow select.reTarget{flex:1 1 100%;min-width:0;width:100%}.stepRow.resistanceMode{display:grid;grid-template-columns:22px 32px minmax(0,1fr) minmax(0,1fr) 60px 26px;gap:4px;align-items:center}.stepRow.resistanceMode .stepNo{grid-column:1;grid-row:1}.stepRow.resistanceMode .moveControls{grid-column:2;grid-row:1;flex-direction:column;width:32px}.stepRow.resistanceMode .stepSelect{grid-column:3;grid-row:1;min-width:0;width:100%;font-size:12px;padding:8px 3px}.stepRow.resistanceMode .resistanceName{grid-column:4;grid-row:1;min-width:0;width:100%!important;font-size:12px;padding:8px 3px;flex:none!important}.stepRow.resistanceMode .resistanceToggle{grid-column:5;grid-row:1;min-width:0;width:100%;font-size:12px;padding:8px 3px}.stepRow.resistanceMode .resistanceOhms{grid-column:3/6;grid-row:2;width:100%;font-size:13px;padding:8px 7px;min-height:38px}.stepRow.resistanceMode button:last-child{grid-column:6;grid-row:1;padding:7px 2px}.stepRow input.resistanceName{flex:1 1 120px!important;width:auto!important}
+.stepRow select.stepSelect{flex:1 1 190px;min-width:0;width:auto}
+.stepRow.inlineFields .reTarget,.stepRow.inlineFields .partCustom,.stepRow.inlineFields .partDetail,.stepRow.inlineFields .cableCustom,.stepRow.inlineFields .harnessVariant{flex:1 1 150px!important;min-width:0!important;width:auto!important}
+.stepRow.inlineFields .partCustom,.stepRow.inlineFields .partDetail{min-height:44px}
+@media(max-width:600px){.stepRow.inlineFields{gap:5px}.stepRow.inlineFields .reTarget,.stepRow.inlineFields .partCustom,.stepRow.inlineFields .partDetail,.stepRow.inlineFields .cableCustom,.stepRow.inlineFields .harnessVariant{font-size:13px;padding:9px 7px}}.stepRow input{flex:1 1 100%;min-width:0;width:100%;position:relative;z-index:1;pointer-events:auto}.stepRow select.reTarget{flex:1 1 100%;min-width:0;width:100%}.stepRow.resistanceMode{display:grid;grid-template-columns:22px 32px minmax(0,1fr) minmax(0,1fr) 60px 26px;gap:4px;align-items:center}.stepRow.resistanceMode .stepNo{grid-column:1;grid-row:1}.stepRow.resistanceMode .moveControls{grid-column:2;grid-row:1;flex-direction:column;width:32px}.stepRow.resistanceMode .stepSelect{grid-column:3;grid-row:1;min-width:0;width:100%;font-size:12px;padding:8px 3px}.stepRow.resistanceMode .resistanceName{grid-column:4;grid-row:1;min-width:0;width:100%!important;font-size:12px;padding:8px 3px;flex:none!important}.stepRow.resistanceMode .resistanceToggle{grid-column:5;grid-row:1;min-width:0;width:100%;font-size:12px;padding:8px 3px}.stepRow.resistanceMode .resistanceOhms{grid-column:3/6;grid-row:2;width:100%;font-size:13px;padding:8px 7px;min-height:38px}.stepRow.resistanceMode button:last-child{grid-column:6;grid-row:1;padding:7px 2px}.stepRow input.resistanceName{flex:1 1 120px!important;width:auto!important}
 .stepRow.checkMode{display:grid;grid-template-columns:25px 34px minmax(105px,1fr) minmax(105px,1fr) minmax(90px,.9fr) 76px 30px;gap:5px;align-items:center}
 .stepRow.checkMode .stepNo{grid-column:1;grid-row:1}
 .stepRow.checkMode .moveControls{grid-column:2;grid-row:1;flex-direction:column;width:34px}
@@ -84,6 +87,21 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 :root.dark .changelog summary{border-color:#4b5563;color:#cbd5e1}
 :root.dark .changelogPanel{background:#111827;border-color:#374151;color:#cbd5e1}
 :root.dark .changelogPanel strong{color:#f3f4f6}
+
+/* V88: consistent, visible dropdown indicator on every select (mobile + desktop) */
+select{appearance:none!important;-webkit-appearance:none!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235b6472' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important;background-size:16px 16px!important;padding-right:36px!important}
+:root.dark select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important}
+select:focus{outline:2px solid #3985df;outline-offset:1px}
+.autoSaveNote{font-size:12px;color:#64748b;align-self:center}
+:root.dark .autoSaveNote{color:#cbd5e1}
+.validationBox{border:1px solid #e0a33a;background:#fff8e8;color:#7a4b00;border-radius:9px;padding:10px 12px;margin:10px 0;line-height:1.5}
+:root.dark .validationBox{background:#3b2f1b;border-color:#9a6b22;color:#ffe0a3}
+
+
+/* V89: visible copy feedback after report generation */
+#copyNotice{display:none;margin:10px 0 0;padding:10px 13px;border-radius:9px;font-size:14px;font-weight:700;line-height:1.45;background:#e8f7ed;color:#176534;border:1px solid #8ac99d}
+#copyNotice.show{display:block}
+:root.dark #copyNotice{background:#153522;color:#a7f3bd;border-color:#287447}
 </style>
 </head>
 <body>
@@ -95,6 +113,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <div class="actions">
 <button class="secondary" id="add">＋ 新增一筆</button>
 <button class="primary" id="generate">產生報告</button>
+<div id="copyNotice" role="status" aria-live="polite"></div>
 <button class="secondary" id="copy">複製全部</button>
 <button class="secondary" id="parseOutput">從輸出回填欄位</button>
 <button class="danger" id="clear">清空全部</button>
@@ -126,7 +145,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <option value="monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;"></option>
 <option value="sbc_storage_usb-passmark-FAIL-MEASUREMENT"></option>
 <option value="power_on-config_static_ip-ERROR-Exception;"></option>
-</datalist>
+<option value="stress-run_stress_1-ERROR-Exception;"></option>\n<option value="linkup-ib_link_stress_1-FAIL-MEASUREMENT;"></option>\n<option value="stress-run_stress_1-FAIL-MEASUREMENT;"></option>\n<option value="osfp_load_enable-osfp_load_enable-ERROR-ValueError;"></option>\n<option value="osfp-normalize_osfp_temperatures-FAIL-MEASUREMENT;"></option>\n<option value="power_on_with_fw-verify_asic_fw_state-FAIL-MEASUREMENT;"></option>\n<option value="ic_a2d_group-mvcr_test-ERROR-ValueError;"></option>\n<option value="monitoring_under_stress-read_voltage_and_current_values-FAIL-MEASUREMENT;"></option>\n<option value="power_on-update_pcie_dev-ERROR-ValueError;"></option>\n<option value="physical_security_asics-fmon_vmon_scp_p0-FAIL-MEASUREMENT;"></option>\n<option value="monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;"></option>\n<option value="monitoring_under_stress-calculate_planarity_deltas-FAIL-MEASUREMENT;"></option>\n<option value="osfp_load_enable-osfp_load_enable-ERROR-MTCError;"></option>\n<option value="monitoring_vis_without_load-monitoring_without_load-FAIL-MEASUREMENT;"></option>\n<option value="monitoring_comex_cpu-read_voltage_current-FAIL-MEASUREMENT;"></option>\n<option value="180 : Salamandra_interconnect_ic.cvf Failed 1 0 1"></option>\n<option value="linkup-ib_link_stress_1-ERROR-TimeoutError;"></option>\n<option value="osfp-calculate_osfp_power_and_theta-FAIL-MEASUREMENT;"></option>\n<option value="latch_array_bist_asics-verify_asic_fw_state-FAIL-MEASUREMENT;"></option>\n<option value="linkup-ib_link_stress_1-ERROR-Exception;"></option>\n<option value="osfp-attributes-FAIL-MEASUREMENT;"></option>\n<option value="188 : SW_U101_MX25U51294_ID_0x3A_ct.cvf Failed 1 0 1"></option>\n<option value="ic_a2d_group-mvcr_test-FAIL-MEASUREMENT;"></option>\n<option value="lbist_asics-lbist-FAIL-MEASUREMENT;"></option>\n<option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT;"></option>\n</datalist>
 <datalist id="netNameOptions"><option value="自訂輸入"></option>
 <option value="SW_GP_PL_AVDD_T_PG"></option>
 <option value="SW_GP_OSFP_SWB_CONTROLLER1_PG"></option>
@@ -164,6 +183,8 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <option value="176 : Salamandra_ASIC_TAP1_infrastructure_inf.cvf Failed 1 0 1">176</option>
 <option value="176 Pwr_Good_AVDD_Sense-all_ct.cvf">176</option>
 <option value="182 : Salamandra_pu&amp;pd_pull.cvf Failed 1 0 1">182</option>
+<option value="180 : Salamandra_interconnect_ic.cvf Failed 1 0 1">180</option>
+<option value="188 : SW_U101_MX25U51294_ID_0x3A_ct.cvf Failed 1 0 1">188</option>
 <option value="194 : SW_U74_Via_U8_U9_Bit1_U12_U13_MUXs_ct.cvf Failed 1 0 1">194</option>
 <option value="197 : SW_U78_Via_U8_U9_Bit1_U10_U11_MUXs_ct.cvf Failed 1 0 1">197</option>
 </optgroup>
@@ -186,7 +207,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <option value="power_on-config_static_ip-ERROR-Exception;">Static IP Exception</option>
 </optgroup>
 <optgroup label="Monitoring">
-<option value="__monitoring_load">Monitoring with Load</option>
+<option value="__monitoring_load">Monitoring with Load（下方選 VRS / OSFP）</option>
 <option value="monitoring_with_load-monitoring_osfp_with_load-FAIL-MEASUREMENT;">OSFP Monitoring with Load</option>
 <option value="osfp_load_enable-osfp_load_enable-ERROR-Value-Error">OSFP Load Enable Value Error</option>
 <option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT">ASIC Delta Temp</option>
@@ -197,7 +218,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <optgroup label="USB / Storage">
 <option value="sbc_storage_usb-passmark-FAIL-MEASUREMENT">USB PassMark Fail</option>
 </optgroup>
-</select>
+\n<optgroup label="Stress / IB Link">\n<option value="stress-run_stress_1-ERROR-Exception;">Stress Run Exception</option>\n<option value="linkup-ib_link_stress_1-FAIL-MEASUREMENT;">IB Link Stress Fail</option>\n<option value="stress-run_stress_1-FAIL-MEASUREMENT;">Stress Run Fail</option>\n<option value="linkup-ib_link_stress_1-ERROR-TimeoutError;">IB Link Stress Timeout</option>\n<option value="linkup-ib_link_stress_1-ERROR-Exception;">IB Link Stress Exception</option>\n</optgroup>\n\n<optgroup label="OSFP">\n<option value="osfp_load_enable-osfp_load_enable-ERROR-ValueError;">OSFP Load Enable ValueError</option>\n<option value="osfp-normalize_osfp_temperatures-FAIL-MEASUREMENT;">OSFP Normalize Temperature Fail</option>\n<option value="osfp_load_enable-osfp_load_enable-ERROR-MTCError;">OSFP Load Enable MTCError</option>\n<option value="osfp-calculate_osfp_power_and_theta-FAIL-MEASUREMENT;">OSFP Power / Theta Fail</option>\n<option value="osfp-attributes-FAIL-MEASUREMENT;">OSFP Attributes Fail</option>\n</optgroup>\n\n<optgroup label="Monitoring">\n<option value="monitoring_under_stress-read_voltage_and_current_values-FAIL-MEASUREMENT;">Read Voltage / Current Fail</option>\n<option value="monitoring_with_load-monitoring_vrs_with_load-FAIL-MEASUREMENT;">VRS Monitoring with Load</option>\n<option value="monitoring_under_stress-calculate_planarity_deltas-FAIL-MEASUREMENT;">Calculate Planarity Deltas Fail</option>\n<option value="monitoring_vis_without_load-monitoring_without_load-FAIL-MEASUREMENT;">VIS Monitoring without Load</option>\n<option value="monitoring_comex_cpu-read_voltage_current-FAIL-MEASUREMENT;">COMEX CPU Read Voltage / Current Fail</option>\n<option value="monitoring_under_stress-summerize_asic_calculations_asics-FAIL-MEASUREMENT;">ASIC Delta Temp</option>\n</optgroup>\n\n<optgroup label="ASIC / BIST">\n<option value="power_on_with_fw-verify_asic_fw_state-FAIL-MEASUREMENT;">Verify ASIC FW State Fail</option>\n<option value="ic_a2d_group-mvcr_test-ERROR-ValueError;">IC A2D MVCR ValueError</option>\n<option value="latch_array_bist_asics-verify_asic_fw_state-FAIL-MEASUREMENT;">Latch Array BIST ASIC FW Verify Fail</option>\n<option value="ic_a2d_group-mvcr_test-FAIL-MEASUREMENT;">IC A2D MVCR Fail</option>\n<option value="lbist_asics-lbist-FAIL-MEASUREMENT;">LBIST ASIC Fail</option>\n</optgroup>\n\n<optgroup label="Physical Security">\n<option value="physical_security_asics-fmon_vmon_scp_p0-FAIL-MEASUREMENT;">Physical Security ASIC Fail</option>\n</optgroup>\n\n<optgroup label="Other FT">\n<option value="power_on-update_pcie_dev-ERROR-ValueError;">Update PCIe Device ValueError</option>\n</optgroup>\n</select>
 <select class="errorLoadType" style="display:none;margin-top:7px"><option value="vrs">VRS</option><option value="osfp">OSFP</option></select>
 <select class="errorAin" style="display:none;margin-top:7px"><option value="0">AIN0</option><option value="1">AIN1</option><option value="2">AIN2</option><option value="3">AIN3</option></select>
 <input class="errorCustom" placeholder="輸入自訂 Error Code" style="display:none;margin-top:7px">
@@ -234,7 +255,7 @@ label{font-size:calc(13px * var(--ui-scale))}.small,.sectionHelp{font-size:calc(
 <option value="J48 Sensor">J48 Sensor</option>
 <option value="Other">Other / 自填</option>
 </select>
-<input class="rcPartCustom" placeholder="自填零件名稱（可搭配上方選單）">
+<input class="rcPartCustom" placeholder="補充型號／位置（可留空；選 Other 時填零件名稱）">
 </div>
 </div>
 </div>
@@ -260,17 +281,23 @@ var statusGroups=[
  ]}
 ];
 function updateRCVisibility(card){
- var found=false;
+ var found=false,hasNTF=false;
  card.querySelectorAll('.stepRow').forEach(function(row){
   var sel=row.querySelector('.stepSelect');
   if(!sel||!sel.value||sel.value==='custom')return;
   var ids=sel.value.split('_'),item=statusGroups[Number(ids[0])]&&statusGroups[Number(ids[0])].items[Number(ids[1])];
   if(item&&item.label==='Check out')found=true;
+  if(item&&item.label==='NTF')hasNTF=true;
  });
- var section=card.querySelector('.rcSection');
+ var section=card.querySelector('.rcSection'),rc=card.querySelector('.rcCode');
  section.style.display=found?'block':'none';
+ if(found&&hasNTF){
+  rc.value='RC35';rc.dataset.autoSelected='true';
+ }else if(rc.dataset.autoSelected==='true'){
+  rc.value='';rc.dataset.autoSelected='';
+ }
  if(!found){
-  card.querySelector('.rcCode').value='';
+  rc.value='';rc.dataset.autoSelected='';
   card.querySelector('.rcPart').value='';
   card.querySelector('.rcPartCustom').value='';
   card.querySelector('.rcPartFields').classList.remove('show');
@@ -287,10 +314,11 @@ function collectPassedParts(card){
   if(it.result==='reassemble_part'&&r.querySelector('.reassembleResult').dataset.state!=='pass')return;
   if(it.result!=='replace_part'&&it.result!=='reassemble_part')return;
   var t=target.value,part='';
-  if(t==='Other')part=r.querySelector('.partCustom').value.trim();
+  if(t==='Harness'){var hv=r.querySelector('.harnessVariant');part=(hv&&hv.value==='3 harness')?'3 harness':'harness'+(hv&&hv.value?' '+hv.value:'');}
+  else if(t==='Other')part=r.querySelector('.partCustom').value.trim();
   else if(t==='Cable')part='Cable'+(r.querySelector('.cableCustom').value.trim()?' '+r.querySelector('.cableCustom').value.trim():'');
   else part=t;
-  var detail=r.querySelector('.partDetail').value.trim();if(detail)part+=(part?' ':'')+detail;
+  var detail=t==='Cable'?'':r.querySelector('.partDetail').value.trim();if(detail)part+=(part?' ':'')+detail;
   add(part);
  });
  return found;
@@ -318,8 +346,9 @@ function addStep(card, presetValue){
  var custom=document.createElement('input');custom.className='stepCustom';custom.placeholder='輸入 Status 內容…';custom.style.display='none';
  var reTarget=document.createElement('select');reTarget.className='reTarget';reTarget.style.display='none';
  var reTargetFirst=document.createElement('option');reTargetFirst.value='';reTargetFirst.textContent='選擇零件';reTarget.appendChild(reTargetFirst);
- var reTargets=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','Cable','3 harness','I/O board','Other'];
- for(var rt=0;rt<reTargets.length;rt++){var ro=document.createElement('option');ro.value=reTargets[rt];ro.textContent=reTargets[rt];reTarget.appendChild(ro);}
+ var reTargets=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','Cable','Harness','I/O board','Other'];
+ for(var rt=0;rt<reTargets.length;rt++){var ro=document.createElement('option');ro.value=reTargets[rt];ro.textContent=reTargets[rt]==='Harness'?'harness':reTargets[rt];reTarget.appendChild(ro);}
+ var harnessVariant=document.createElement('select');harnessVariant.className='harnessVariant';harnessVariant.style.display='none';[['','選擇 Harness 型號'],['3 harness','3 harness'],['HAR002261','HAR002261'],['HAR002265','HAR002265'],['HAR002262','HAR002262']].forEach(function(x){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];harnessVariant.appendChild(o);});
  var cableInput=document.createElement('input');cableInput.className='cableCustom';cableInput.placeholder='Cable 編號（可留空）…';cableInput.style.display='none';
  var partCustom=document.createElement('input');partCustom.className='partCustom';partCustom.placeholder='輸入零件名稱…';partCustom.style.display='none';
  var partDetail=document.createElement('input');partDetail.className='partDetail';partDetail.placeholder='補充位置／編號（可留空）…';partDetail.style.display='none';
@@ -342,35 +371,38 @@ function addStep(card, presetValue){
  remove.onclick=function(){row.parentNode.removeChild(row);renumberSteps(card);updateRCVisibility(card);};
  action.onchange=function(){
   updateRCVisibility(card);
-  custom.style.display='none';result.style.display='none';reTarget.style.display='none';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';reburnWrap.style.display='none';reburnCheckbox.checked=false;replaceResult.style.display='none';reassembleResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkPart.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
-  row.classList.remove('resistanceMode','checkMode');
+  custom.style.display='none';result.style.display='none';reTarget.style.display='none';harnessVariant.style.display='none';harnessVariant.value='';cableInput.style.display='none';partCustom.style.display='none';partDetail.style.display='none';reburnWrap.style.display='none';reburnCheckbox.checked=false;replaceResult.style.display='none';reassembleResult.style.display='none';resistanceName.style.display='none';resistanceResult.style.display='none';resistanceOhms.style.display='none';checkPart.style.display='none';checkName.style.display='none';checkResult.style.display='none';ictTarget.style.display='none';furtherDebug.style.display='none';
+  row.classList.remove('resistanceMode','checkMode','inlineFields');
   if(action.value==='custom'){custom.style.display='block';return;}
   if(!action.value)return;
   var ids=action.value.split('_'),item=statusGroups[Number(ids[0])].items[Number(ids[1])];
   if(item.result==='custom_text'){custom.style.display='block';custom.placeholder='補充內容…';}
   if(item.result==='ict_handoff'){ictTarget.style.display='block';furtherDebug.style.display='inline-block';furtherDebug.textContent='Further debug: OFF';furtherDebug.dataset.state='off';furtherDebug.className='resultToggle furtherDebug';}
   if(item.result===true){result.style.display='inline-block';result.textContent='Pass';result.dataset.state='pass';result.className='resultToggle pass';}
-  if(item.result==='reassemble_part'){reTarget.style.display='block';reassembleResult.style.display='inline-block';reassembleResult.dataset.state='pass';reassembleResult.textContent='Pass';reassembleResult.className='resultToggle reassembleResult pass';}
-  if(item.result==='assemble_handoff'){reTarget.style.display='block';partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
-  if(item.result==='replace_part'){reTarget.style.display='block';replaceResult.style.display='inline-block';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.className='resultToggle replaceResult pass';}
+  if(item.result==='reassemble_part'){row.classList.add('inlineFields');reTarget.style.display='block';reassembleResult.style.display='inline-block';reassembleResult.dataset.state='pass';reassembleResult.textContent='Pass';reassembleResult.className='resultToggle reassembleResult pass';}
+  if(item.result==='assemble_handoff'){row.classList.add('inlineFields');reTarget.style.display='block';partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
+  if(item.result==='replace_part'){row.classList.add('inlineFields');reTarget.style.display='block';replaceResult.style.display='inline-block';replaceResult.textContent='Pass';replaceResult.dataset.state='pass';replaceResult.className='resultToggle replaceResult pass';}
   if(item.result==='handoff_part'||item.result==='assemble_handoff'){
-   reTarget.style.display='block';
+   row.classList.add('inlineFields');reTarget.style.display='block';
    var passed=collectPassedParts(card);
    if(passed.length){
     // 先將第一個 Pass 零件對應到選單；其餘零件與位置完整保留在補充欄位。
-    var knownParts=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','Cable','3 harness','I/O board'];
+    var knownParts=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','Cable','Harness','I/O board'];
     var selectedPart='', selectedDetail='', unmatched=[];
     passed.forEach(function(sourcePart){
      var matchedPart='';
      for(var pi=0;pi<knownParts.length;pi++){
       var kp=knownParts[pi];
-      if(sourcePart.toLowerCase()===kp.toLowerCase() || sourcePart.toLowerCase().indexOf(kp.toLowerCase()+' ')===0){matchedPart=kp;var suffix=sourcePart.slice(kp.length).trim();if(!selectedPart){selectedPart=kp;if(suffix)selectedDetail=suffix;}else{unmatched.push(sourcePart);}break;}
+      var normalizedSource=sourcePart.toLowerCase().indexOf('3 harness')===0?'harness 3 harness'+sourcePart.slice(9):sourcePart;
+      if(normalizedSource.toLowerCase()===kp.toLowerCase() || normalizedSource.toLowerCase().indexOf(kp.toLowerCase()+' ')===0){matchedPart=kp;var suffix=normalizedSource.slice(kp.length).trim();if(!selectedPart){selectedPart=kp;if(suffix)selectedDetail=suffix;}else{unmatched.push(sourcePart);}break;}
      }
      if(!matchedPart)unmatched.push(sourcePart);
     });
     if(selectedPart){
      reTarget.value=selectedPart;
      reTarget.dispatchEvent(new Event('change',{bubbles:true}));
+     if(selectedPart==='Harness'&&['HAR002261','HAR002265','HAR002262'].indexOf(selectedDetail)>=0){harnessVariant.value=selectedDetail;selectedDetail='';}
+     else if(selectedPart==='Harness'&&selectedDetail.toLowerCase()==='3 harness'){harnessVariant.value='3 harness';selectedDetail='';}
      var extras=[selectedDetail].concat(unmatched).filter(Boolean);
      partDetail.value=extras.join('; ');
     }else{
@@ -384,14 +416,17 @@ function addStep(card, presetValue){
   }
   if(item.result==='resistance_test'){row.classList.add('resistanceMode');resistanceName.style.display='block';resistanceResult.style.display='block';resistanceResult.value='ok';resistanceOhms.style.display='none';resistanceOhms.value='';}
   if(item.result==='check_test'){row.classList.add('checkMode');checkPart.style.display='block';checkName.style.display='block';checkResult.style.display='block';checkResult.value='ok';}
+  // 切換維修動作後，若零件仍選 Harness/Cable，重新顯示對應型號或編號欄位。
+  if(reTarget.value){reTarget.dispatchEvent(new Event('change',{bubbles:true}));}
  };
  resistanceResult.onchange=function(){resistanceOhms.style.display=resistanceResult.value==='fail'?'block':'none';if(resistanceResult.value!=='fail')resistanceOhms.value='';};
  reTarget.onchange=function(){
   var chosen=action.value?statusGroups[Number(action.value.split('_')[0])].items[Number(action.value.split('_')[1])]:null;
-  if(chosen&&chosen.result==='assemble_handoff'){partCustom.style.display='block';partCustom.placeholder='自填零件名稱（可留空）…';}
+  if(chosen&&chosen.result==='assemble_handoff'){partCustom.placeholder='自填零件名稱（可留空）…';}
   cableInput.style.display=reTarget.value==='Cable'?'block':'none';
-  partCustom.style.display=(reTarget.value==='Other'||(chosen&&chosen.result==='assemble_handoff'))?'block':'none';
-  partDetail.style.display=(reTarget.value && reTarget.value!=='Other')?'block':'none';
+  harnessVariant.style.display=reTarget.value==='Harness'?'block':'none';
+  partCustom.style.display=reTarget.value==='Other'?'block':'none';
+  partDetail.style.display=(reTarget.value && reTarget.value!=='Other' && reTarget.value!=='Cable')?'block':'none';
   if(chosen&&chosen.label==='Need RE to change'){
    reburnWrap.style.display='inline-flex';
    var boardParts=['AMD','BMC','SWB','OSFP board','MGMT board','PDB','I/O board'];
@@ -403,7 +438,7 @@ function addStep(card, presetValue){
  furtherDebug.onclick=function(){furtherDebug.dataset.state=furtherDebug.dataset.state==='on'?'off':'on';furtherDebug.textContent='Further debug: '+(furtherDebug.dataset.state==='on'?'ON':'OFF');furtherDebug.className='resultToggle furtherDebug '+furtherDebug.dataset.state;};
  reassembleResult.onclick=function(){reassembleResult.dataset.state=reassembleResult.dataset.state==='pass'?'still_failed':'pass';reassembleResult.textContent=reassembleResult.dataset.state==='pass'?'Pass':'Still Failed';reassembleResult.className='resultToggle reassembleResult '+(reassembleResult.dataset.state==='pass'?'pass':'fail');};
  replaceResult.onclick=function(){replaceResult.dataset.state=replaceResult.dataset.state==='pass'?'still_failed':'pass';replaceResult.textContent=replaceResult.dataset.state==='pass'?'Pass':'Still Failed';replaceResult.className='resultToggle replaceResult '+(replaceResult.dataset.state==='pass'?'pass':'fail');};
- row.appendChild(no);row.appendChild(moveControls);row.appendChild(action);row.appendChild(result);row.appendChild(custom);row.appendChild(reTarget);row.appendChild(cableInput);row.appendChild(partCustom);row.appendChild(partDetail);row.appendChild(reburnWrap);row.appendChild(reassembleResult);row.appendChild(replaceResult);row.appendChild(resistanceName);row.appendChild(resistanceResult);row.appendChild(resistanceOhms);row.appendChild(checkPart);row.appendChild(checkName);row.appendChild(checkResult);row.appendChild(ictTarget);row.appendChild(furtherDebug);row.appendChild(remove);
+ row.appendChild(no);row.appendChild(moveControls);row.appendChild(action);row.appendChild(result);row.appendChild(custom);row.appendChild(reTarget);row.appendChild(harnessVariant);row.appendChild(cableInput);row.appendChild(partCustom);row.appendChild(partDetail);row.appendChild(reburnWrap);row.appendChild(reassembleResult);row.appendChild(replaceResult);row.appendChild(resistanceName);row.appendChild(resistanceResult);row.appendChild(resistanceOhms);row.appendChild(checkPart);row.appendChild(checkName);row.appendChild(checkResult);row.appendChild(ictTarget);row.appendChild(furtherDebug);row.appendChild(remove);
  card.querySelector('.statusSteps').appendChild(row);renumberSteps(card);if(presetValue){action.value=presetValue;action.dispatchEvent(new Event('change',{bubbles:true}));}
 }
 function flashMoved(row){row.classList.remove('justMoved');void row.offsetWidth;row.classList.add('justMoved');setTimeout(function(){row.classList.remove('justMoved');},500);}
@@ -489,6 +524,7 @@ function addRecord(skipInitialStep){
  rcSelect.addEventListener('change',updateRCPart);
  rcPart.addEventListener('change',function(){
   rcPartCustom.style.display='block';
+  rcPartCustom.placeholder=rcPart.value==='Other'?'輸入 RC48 零件名稱':'補充型號／位置（可留空）';
  });
  updateRCPart();
  station.addEventListener('change',function(){custom.style.display=station.value==='__custom'?'block':'none';updateErrorOptionsForStation(card);});
@@ -496,6 +532,22 @@ function addRecord(skipInitialStep){
  card.querySelector('.addStep').onclick=function(){addStep(card);};
  records.appendChild(card);if(!skipInitialStep)addStep(card);updateRCVisibility(card);renumber();return card;
 }
+
+function setRC48PartText(card,text){
+ var partSel=card.querySelector('.rcPart'),custom=card.querySelector('.rcPartCustom');
+ var value=(text||'').trim();
+ var opts=Array.from(partSel.options).filter(function(o){return o.value&&o.value!=='Other';}).sort(function(a,b){return b.value.length-a.value.length;});
+ var match=opts.find(function(o){return value===o.value || value.toLowerCase().indexOf((o.value+' ').toLowerCase())===0;});
+ if(match){
+  partSel.value=match.value;
+  custom.value=value.slice(match.value.length).trim();
+ }else{
+  partSel.value='Other';
+  custom.value=value;
+ }
+ partSel.dispatchEvent(new Event('change'));
+}
+
 function renumber(){
  var cards=records.querySelectorAll('.record');
  for(var i=0;i<cards.length;i++)cards[i].querySelector('.num').textContent=i+1;
@@ -519,7 +571,13 @@ function makeReport(){
   var rcCode=c.querySelector('.rcCode').value;
   var rcPart=c.querySelector('.rcPart').value;
   var rcPartCustom=c.querySelector('.rcPartCustom').value.trim();
-  var rcPartName=rcPartCustom || (rcPart==='Other'?'':rcPart);
+  var rcPartName='';
+  if(rcPart==='Other') rcPartName=rcPartCustom;
+  else if(rcPart) {
+   var rcDetail=rcPartCustom;
+   if(rcDetail.toLowerCase().indexOf(rcPart.toLowerCase())===0) rcDetail=rcDetail.slice(rcPart.length).trim();
+   rcPartName=rcPart+(rcDetail?' '+rcDetail:'');
+  } else rcPartName=rcPartCustom;
   var netName=c.querySelector('.netNameText').value.trim();
   var stepRows=c.querySelectorAll('.stepRow'),steps=[],hasCheckOut=false;
   for(var z=0;z<stepRows.length;z++){var zsel=stepRows[z].querySelector('.stepSelect');if(zsel&&zsel.value&&zsel.value!=='custom'){var zids=zsel.value.split('_'),zitem=statusGroups[Number(zids[0])]&&statusGroups[Number(zids[0])].items[Number(zids[1])];if(zitem&&zitem.label==='Check out')hasCheckOut=true;}}
@@ -547,14 +605,17 @@ function makeReport(){
      var assembleTarget=row.querySelector('.reTarget').value;
      var assembleCustom=row.querySelector('.partCustom').value.trim();
      var assembleDetail=row.querySelector('.partDetail').value.trim();
-     var assemblePart=assembleTarget==='Other'?assembleCustom:(assembleTarget+(assembleDetail?' '+assembleDetail:''));
+     var assembleCable=row.querySelector('.cableCustom').value.trim();
+     var assemblePart=assembleTarget==='Other'?assembleCustom:(assembleTarget==='Cable'?('Cable'+(assembleCable?' '+assembleCable:'')):(assembleTarget==='Harness'?((row.querySelector('.harnessVariant').value==='3 harness'?'3 harness':'harness'+(row.querySelector('.harnessVariant').value?' '+row.querySelector('.harnessVariant').value:''))+(assembleDetail?' '+assembleDetail:'')):(assembleTarget+(assembleDetail?' '+assembleDetail:''))));
      step=assemblePart?'Need RE to assemble '+assemblePart:'';
     }else if(item.result==='reassemble_part'){ 
      var reTargetValue=row.querySelector('.reTarget').value;
      if(reTargetValue==='Cable'){
       var cableNo=row.querySelector('.cableCustom').value.trim();
-      var cablePos=row.querySelector('.partDetail').value.trim();
-      step='Reassemble cable'+(cableNo?' '+cableNo:'')+(cablePos?' '+cablePos:'')+' - '+(row.querySelector('.reassembleResult').dataset.state==='pass'?'Pass':'Still Failed');
+      step='Reassemble cable'+(cableNo?' '+cableNo:'')+' - '+(row.querySelector('.reassembleResult').dataset.state==='pass'?'Pass':'Still Failed');
+     }else if(reTargetValue==='Harness'){
+      var harnessDetail=row.querySelector('.partDetail').value.trim();var harnessType=row.querySelector('.harnessVariant').value;
+      step='Reassemble '+(harnessType==='3 harness'?'3 harness':'harness'+(harnessType?' '+harnessType:''))+(harnessDetail?' '+harnessDetail:'')+' - '+(row.querySelector('.reassembleResult').dataset.state==='pass'?'Pass':'Still Failed');
      }else if(reTargetValue==='Other'){
       var otherPart=row.querySelector('.partCustom').value.trim();
       step=otherPart?'Reassemble '+otherPart+' - '+(row.querySelector('.reassembleResult').dataset.state==='pass'?'Pass':'Still Failed'):'';
@@ -565,10 +626,11 @@ function makeReport(){
     }else if(item.result==='replace_part'||item.result==='handoff_part'){
      var target=row.querySelector('.reTarget').value;
      var replaceSuffix=item.result==='replace_part'?' - '+(row.querySelector('.replaceResult').dataset.state==='pass'?'Pass':'Still Failed'):'';
-     if(target==='Cable'){
+     if(target==='Harness'){
+      var hType=row.querySelector('.harnessVariant').value;var hDetail=row.querySelector('.partDetail').value.trim();step=item.label+' '+(hType==='3 harness'?'3 harness':'harness'+(hType?' '+hType:''))+(hDetail?' '+hDetail:'')+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':'');
+     }else if(target==='Cable'){
       var cable=row.querySelector('.cableCustom').value.trim();
-      var cableDetail=row.querySelector('.partDetail').value.trim();
-      step=item.label+' cable'+(cable?' '+cable:'')+(cableDetail?' '+cableDetail:'')+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':'');
+      step=item.label+' cable'+(cable?' '+cable:'')+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':'');
      }else if(target==='Other'){
       var part=row.querySelector('.partCustom').value.trim();
       step=part?item.label+' '+part+replaceSuffix+(item.label==='Need RE to change'&&row.querySelector('.reburnJtagCheckbox').checked?' and reburn JTAG':''):'';
@@ -591,7 +653,22 @@ function makeReport(){
  document.getElementById('count').textContent=blocks.length+' 筆';
 }
 document.getElementById('add').onclick=addRecord;
-document.getElementById('generate').onclick=function(){try{makeReport();}catch(e){var out=document.getElementById('output');out.value='產生失敗：'+(e&&e.message?e.message:String(e));document.getElementById('count').textContent='請回報此錯誤';}};
+var copyNoticeTimer;
+async function copyGeneratedReport(){
+ var out=document.getElementById('output'),notice=document.getElementById('copyNotice');
+ if(!out.value.trim()){notice.textContent='報告內容是空的，沒有可複製的文字。';notice.classList.add('show');return false;}
+ var copied=false;
+ try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(out.value);copied=true;}}catch(e){}
+ if(!copied){
+  try{out.focus();out.select();out.setSelectionRange(0,out.value.length);copied=document.execCommand('copy');}catch(e){}
+ }
+ notice.textContent=copied?'✓ 報告已產生，並已自動複製到剪貼簿！可以直接貼到聊天群。':'報告已產生，但瀏覽器未允許自動複製。請點「複製全部」或長按輸出框複製。';
+ notice.classList.add('show');
+ if(copyNoticeTimer)clearTimeout(copyNoticeTimer);
+ copyNoticeTimer=setTimeout(function(){notice.classList.remove('show');},6500);
+ return copied;
+}
+document.getElementById('generate').onclick=async function(){try{var problems=validateRecords();if(problems.length){alert('產生前檢查發現以下欄位需要確認：\n\n'+problems.slice(0,18).join('\n')+(problems.length>18?'\n…另有 '+(problems.length-18)+' 項':'')+'\n\n請修正後再產生報告。');return;}makeReport();saveDraftNow();await copyGeneratedReport();}catch(e){var out=document.getElementById('output');out.value='產生失敗：'+(e&&e.message?e.message:String(e));document.getElementById('count').textContent='請回報此錯誤';}};
 document.getElementById('copy').onclick=async function(){
  var out=document.getElementById('output');
  if(!out.value)return;
@@ -644,6 +721,7 @@ document.getElementById('dailyReport').onclick=function(){
 };
 
 document.getElementById('clear').onclick=function(){
+ try{localStorage.removeItem('salamandra-v88-draft');}catch(e){}
  var out=document.getElementById('output');
  out.value='';
  document.getElementById('count').textContent='';
@@ -693,18 +771,12 @@ document.getElementById('parseOutput').onclick=function(){
     else if(key==='SUBBIN') c.querySelector('.subbinText').value=normalizeSubBin(val);
     else if(key==='RC'){
      var rcVal=val.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
-     if(rcVal){c.querySelector('.rcCode').value=rcVal[1];if(rcVal[1]==='RC48'&&rcVal[2]){var ps=c.querySelector('.rcPart'),pt=rcVal[2].trim(),po=Array.from(ps.options).find(function(o){return o.value===pt;});if(po)ps.value=pt;else{ps.value='Other';c.querySelector('.rcPartCustom').value=pt;}ps.dispatchEvent(new Event('change'));}c.querySelector('.rcCode').dispatchEvent(new Event('change'));}
+     if(rcVal){c.querySelector('.rcCode').value=rcVal[1];if(rcVal[1]==='RC48'&&rcVal[2])setRC48PartText(c,rcVal[2]);c.querySelector('.rcCode').dispatchEvent(new Event('change'));}
     }
    }else if(/^RC(?:35|56|48)(?:\s*[—-]\s*(.*))?$/.test(line.trim())){ 
     var rcMatch=line.trim().match(/^(RC(?:35|56|48))(?:\s*[—-]\s*(.*))?$/);
     c.querySelector('.rcCode').value=rcMatch[1];
-    if(rcMatch[1]==='RC48'&&rcMatch[2]){
-     var partText=rcMatch[2].trim(),partSel=c.querySelector('.rcPart');
-     var partOpt=Array.from(partSel.options).find(function(o){return o.value===partText;});
-     if(partOpt)partSel.value=partText;
-     else {partSel.value='Other';c.querySelector('.rcPartCustom').value=partText;}
-     c.querySelector('.rcPart').dispatchEvent(new Event('change'));
-    }
+    if(rcMatch[1]==='RC48'&&rcMatch[2]) setRC48PartText(c,rcMatch[2]);
     c.querySelector('.rcCode').dispatchEvent(new Event('change'));
     inStatus=false;
    }
@@ -748,16 +820,77 @@ document.getElementById('parseOutput').onclick=function(){
  document.getElementById('count').textContent=chunks.length+' 筆已回填';
 };
 
+
+// V88 pre-generation validation: only validate records that contain any user data.
+function validateRecords(){
+ var issues=[];var cards=records.querySelectorAll('.record');
+ cards.forEach(function(c,i){
+  var sn=c.querySelector('.sn').value.trim(),station=c.querySelector('.station').value,errorSel=c.querySelector('.errorSelect'),error=errorSel.value==='__custom'?c.querySelector('.errorCustom').value.trim():errorSel.value;
+  var rows=c.querySelectorAll('.stepRow');
+  var hasAny=!!(sn||c.querySelector('.stationCustom').value.trim()||station!=='JTAG'||error||c.querySelector('.netNameText').value.trim()||c.querySelector('.subbinText').value.trim()||Array.from(rows).some(function(r){return r.querySelector('.stepSelect').value;}));
+  if(!hasAny)return;
+  var n=i+1;
+  if(!sn)issues.push('資料 '+n+'：缺少 SN');
+  if(!station)issues.push('資料 '+n+'：缺少 Station');
+  if(!error)issues.push('資料 '+n+'：缺少 Error Code');
+  var filled=Array.from(rows).filter(function(r){return !!r.querySelector('.stepSelect').value;});
+  if(!filled.length)issues.push('資料 '+n+'：至少新增一個 Status');
+  filled.forEach(function(r){
+   var v=r.querySelector('.stepSelect').value;if(v==='custom'){if(!r.querySelector('.stepCustom').value.trim())issues.push('資料 '+n+'：自訂 Status 尚未填寫');return;}
+   var p=v.split('_'),it=statusGroups[+p[0]]&&statusGroups[+p[0]].items[+p[1]];if(!it)return;
+   if(['replace_part','reassemble_part','handoff_part','assemble_handoff'].indexOf(it.result)>=0){
+    var target=r.querySelector('.reTarget').value;
+    if(!target)issues.push('資料 '+n+'：'+it.label+' 尚未選擇零件');
+    else if(target==='Other'&&!r.querySelector('.partCustom').value.trim())issues.push('資料 '+n+'：'+it.label+' 的自訂零件名稱未填');
+    else if(target==='Harness'&&!r.querySelector('.harnessVariant').value)issues.push('資料 '+n+'：Harness 尚未選擇型號');
+   }
+   if(it.result==='check_test'&&!r.querySelector('.checkPart').value)issues.push('資料 '+n+'：Check 尚未選擇零件');
+   if(it.result==='resistance_test'&&!r.querySelector('.resistanceName').value.trim())issues.push('資料 '+n+'：Test resistance 尚未填測試項目');
+   if(it.result==='ict_handoff'&&!r.querySelector('.ictTarget').value.trim())issues.push('資料 '+n+'：Need RE do ICT 尚未填寫對象');
+  });
+ });
+ return issues;
+}
+var draftTimer=null,restoringDraft=false;
+function saveDraftNow(){
+ if(restoringDraft)return;
+ var out=document.getElementById('output'),count=document.getElementById('count'),oldOut=out.value,oldCount=count.textContent;
+ try{makeReport();var snapshot=out.value;if(snapshot.trim())localStorage.setItem('salamandra-v88-draft',snapshot);else localStorage.removeItem('salamandra-v88-draft');}
+ catch(e){}finally{out.value=oldOut;count.textContent=oldCount;}
+ updateDraftButton();
+}
+function scheduleDraftSave(){if(restoringDraft)return;clearTimeout(draftTimer);draftTimer=setTimeout(saveDraftNow,450);}
+function updateDraftButton(){var b=document.getElementById('restoreDraft');if(b)b.style.display=localStorage.getItem('salamandra-v88-draft')?'inline-block':'none';}
+(function setupDraft(){
+ var actions=document.querySelector('.actions');
+ var restore=document.createElement('button');restore.type='button';restore.id='restoreDraft';restore.className='secondary';restore.textContent='恢復自動暫存';restore.style.display='none';
+ var note=document.createElement('span');note.className='autoSaveNote';note.textContent='輸入內容會自動暫存於此裝置';
+ actions.appendChild(restore);actions.appendChild(note);
+ restore.onclick=function(){var snapshot=localStorage.getItem('salamandra-v88-draft');if(!snapshot)return;if(!confirm('要恢復上次自動暫存的維修紀錄嗎？目前畫面中的資料會被取代。'))return;restoringDraft=true;var out=document.getElementById('output');out.value=snapshot;document.getElementById('parseOutput').click();out.value='';document.getElementById('count').textContent='已恢復暫存';restoringDraft=false;restore.style.display='none';};
+ records.addEventListener('input',scheduleDraftSave);records.addEventListener('change',scheduleDraftSave);
+ window.addEventListener('beforeunload',saveDraftNow);
+ updateDraftButton();
+})();
+
 addRecord();
 
 </script>
 <footer style="text-align:center;color:#8a929d;font-size:11px;padding:18px 0 8px">
  <div class="versionInfo">
-  <span>Salamandra SN Report Generator · V79 · Created by Alex Sun</span>
+  <span>Salamandra SN Report Generator · V90 · Created by Alex Sun</span>
   <details class="changelog">
    <summary>改版資訊</summary>
    <div class="changelogPanel">
-    <strong>V80</strong><br>Need RE to assemble 自動帶入前面 Pass 零件；輸出保留零件選單與補充位置；多個 Pass 零件會以選單＋補充欄位完整保留，不再整批塞進 Other。<br>修正多零件自動帶入的選單對應與資料遺失問題。<br>
+     <strong>V90</strong><br>修正 RC48 零件選單輸出：選單所選零件會保留，補充欄位作為型號／位置附註；回填時可解析「零件＋補充內容」。<br>
+     <strong>V89</strong><br>產生報告後自動複製完整報告到剪貼簿，並顯示成功／失敗提示；保留手動「複製全部」按鈕作為備援。<br>
+     <strong>V88</strong><br>手機介面整理：所有下拉選單加明顯箭頭、FT Error Code 依 Stress／IB Link、OSFP、Monitoring、ASIC／BIST、Power／PCIe、Physical Security 分組；新增產生前欄位檢查與本機自動暫存／恢復。<br>
+     <strong>V87</strong><br>修正 TOP 32 中數字開頭的 CVF Error Code 分類：180、188 移至 JTAG / CVF 選單，不再出現在 FT；數字開頭的 CVF 項目統一歸類 JTAG。<br>
+     <strong>V86</strong><br>依據最新 Error Code TOP 32 統計，新增尚未收錄的 FT Error Code，涵蓋 Stress、IB Link、OSFP、ASIC、PCIe、Monitoring、Physical Security、LBIST 等項目；保留原始 Error Code 字串供報告輸出。<br>
+     <strong>V85</strong><br>修正切換維修動作後 Harness 型號選單／補充欄位未重新顯示；移除會強制隱藏 Harness 型號選單的手機版樣式；修正 Need RE to assemble 讀取 Harness 型號時的欄位作用域。<br>
+     <strong>V84</strong><br>所有維修類型選擇 Cable 時只顯示一個編號輸入欄；修正 Need RE to assemble、Reassemble、Replace／Need RE to change 的 Cable 輸出一致性；Harness 型號選單維持適用於 Replace、Reassemble、Need RE to change、Need RE to assemble。<br>
+     <strong>V83</strong><br>修正 Harness 選擇 3 harness 時的輸出格式（Replace 3 harness，不重複 harness）；Status 同時包含 NTF 與 Check out 時自動選擇 RC35；同步更新頁尾版號。<br>
+    <strong>V82</strong><br>修正 Need RE to assemble 零件帶入與多零件處理。<br>
+   <strong>V81</strong><br>零件選單與補充欄位改為同一行排列，減少手機畫面空白；Harness 改為主選單＋型號選單（3 harness／HAR002261／HAR002265／HAR002262），選 3 harness 不重複輸出。<br>
     <strong>V77</strong><br>修正 Replace 換板後自動追加 Reburn JTAG 的問題；只有 Need RE to change 的 reburn JTAG 勾選項會控制是否輸出。<br>
     <strong>V76</strong><br>新增可展開／收合的改版資訊，點擊「改版資訊」查看版本紀錄。<br>
     <strong>V75</strong><br>Need RE 更換零件時，可勾選是否同時 reburn JTAG；小零件預設不勾選。<br>
